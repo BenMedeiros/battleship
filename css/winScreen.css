@@ -1,0 +1,81 @@
+#game-config-screen, #game-config-screen * {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#game-config-screen {
+  background-color: var(--color-menu-backdrop);
+  color: var(--color-menu-border);
+  border: 1px solid var(--color-menu-border);
+  border-radius: .5rem;
+  filter: drop-shadow(4px 4px 14px black);
+  padding: .5rem;
+  text-align: center;
+  position: absolute;
+
+  margin: 8rem auto;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 15rem;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+#game-config-screen > button {
+  background-color: var(--color-backdrop);
+  color: var(--color-text);
+  padding: 1.1rem 1.3rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 1rem;
+}
+
+#game-config-screen > button:hover {
+  background-color: var(--color-backdrop-hover);
+  border: 1px solid black;
+}
+
+#game-config-screen label {
+  text-align: right;
+  display: inline-block;
+  width: 40%;
+  padding-right: 4%;
+}
+
+#game-config-screen input {
+  width: 50%;
+  margin: .2rem 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: .5rem;
+  box-sizing: border-box;
+  padding-left: 3%;
+}
+
+#game-config-screen input:read-only {
+  border: 0;
+  box-shadow: none;
+  background-color: var(--color-menu-subtext);
+}
+
+#game-config-screen > img {
+  height: 6rem;
+  margin: 1rem;
+}
+
+#team-selector-box {
+  display: flex;
+  justify-content: space-evenly;
+  margin-block: 1rem;
+}
+
+#team-selector-box > div {
+  border: solid black 1px;
+  padding: 1rem;
+}
+
+

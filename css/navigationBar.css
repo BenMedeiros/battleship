@@ -1,0 +1,107 @@
+.header-bar {
+    width: auto;
+    display: flex;
+    /*flex-wrap: wrap;*/
+    background-color: var(--color-menu-backdrop);
+    color: var(--color-menu-border);
+    overflow-x: auto;
+}
+
+.header-bar > button {
+    display: block;
+    padding: 0;
+    border: 0;
+    background-color: var(--color-menu-backdrop);
+    /*noinspection CssInvalidPropertyValue*/
+    text-wrap: nowrap;
+}
+
+.header-bar > button > * {
+    display: block;
+    font-size: 1.3rem;
+    color: var(--color-menu-border);
+    background-color: var(--color-menu-backdrop);
+    text-decoration: none;
+    border: .1rem solid var(--color-menu-backdrop);
+    border-radius: .5rem;
+    padding: .5rem .5rem;
+}
+
+.header-bar > button > input {
+    width: 10rem;
+}
+
+.header-bar *::-webkit-file-upload-button {
+    display: none;
+}
+
+/*.header-bar > button > a:visited {*/
+/*    text-decoration: none;*/
+/*}*/
+
+.header-bar > button:hover:not(:disabled) > * {
+    background-color: var(--color-menu-btn-hover);
+    border-style: solid;
+}
+
+.header-bar > button:disabled > * {
+    color: var(--color-btn-disabled);
+}
+
+.header-bar > div {
+    padding: 1rem;
+    /*noinspection CssInvalidPropertyValue*/
+    text-wrap: nowrap;
+}
+
+#controls-bar label {
+    text-align: right;
+    /*display: inline-block;*/
+    /*height: 1.3rem;*/
+    /*width: 50%;*/
+    min-width: 5rem;
+    padding-right: 1rem;
+}
+
+#controls-bar input, select {
+    height: 1.3rem;
+    /*width: 40%;*/
+    /*margin: .2rem 0;*/
+    /*display: inline-block;*/
+    border: 1px solid var(--color-menu-border);
+    background-color: var(--color-menu-border);
+    border-radius: .5rem;
+}
+
+#controls-bar input:read-only {
+    border: 0;
+    box-shadow: none;
+    background-color: var(--color-menu-subtext);
+}
+
+#controls-bar input[type="number"] {
+    width: 5rem;
+}
+
+#controls-bar input::placeholder {
+    color: var(--color-menu-backdrop);
+}
+
+#controls-bar input:hover, select:hover {
+    border: 1px solid black;
+}
+
+#clue-lbl-0 {
+    width: 10rem;
+}
+
+#clue-count-lbl-1 {
+    width: 4rem;
+}
+
+/* on small screen, just hide disabled buttons rather than graying*/
+@media only screen and (max-width: 600px) {
+    #controls-bar > button:disabled {
+        display: none;
+    }
+}
