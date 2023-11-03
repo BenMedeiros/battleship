@@ -1,6 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 
+/*
+* Creates js manifests for every folder in assets so that they can be referenced
+* easily when coding rather than having to maintain paths manually.
+*
+* */
+
 // creates manifest for all assets in the folder
 function createManifestForFolder(folder) {
   const fullPathToFolder = fullPath + folder + '/';
