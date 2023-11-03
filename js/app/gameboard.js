@@ -2,7 +2,8 @@
 
 import {getCursorPosition} from "../canvas/interactions.js";
 import {loadServerImage} from "../canvas/fileHandler.js";
-import image_manifest from "../../assets/img/image_manifest.js";
+import img_manifest from "../../assets/img/img_manifest.js";
+import {getSelectedAssetKey} from "./assetPlacer.js";
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext("2d");
@@ -11,47 +12,39 @@ export function setupCanvas() {
   canvas.height = 600;
   canvas.width = 600;
 
-
   ctx.fillStyle = 'rgb(66,135,133)';
-  ctx.fillRect(0, 0, 600, 500);
+  ctx.fillRect(0, 0, 600, 600);
   console.log('draw rect');
 
   trackClick();
 }
 
-let mousedown = false;
-let moves = 0;
 
 function trackClick() {
+  // let imageIndex = 0;
+  const images = Object.values(img_manifest);
+
   canvas.addEventListener('mousedown', (event) => {
-    mousedown = true;
     const {x, y} = getCursorPosition(canvas, event)
-    ctx.fillStyle = 'rgb(5,5,5)';
-    ctx.fillRect(Math.round(x), Math.round(y), 5, 5);
+    // ctx.fillStyle = 'rgb(5,5,5)';
+    // ctx.fillRect(Math.round(x), Math.round(y), 5, 5);
 
-    moves = 0;
+    // loadServerImage(images[imageIndex].src, (img) => drawImage(img, x, y));
+
+    const selectedAsset = img_manifest[getSelectedAssetKey()];
+    if (!selectedAsset) return;
+
+    loadServerImage(selectedAsset.src, (img) => drawImage(img, x, y));
   });
 
-  canvas.addEventListener('mousemove', event => {
-    if (!mousedown) return;
-
-    moves++;
-    console.log(moves);
-    const {x, y} = getCursorPosition(canvas, event)
-    ctx.fillStyle = 'rgb(5,5,5)';
-    ctx.fillRect(Math.round(x), Math.round(y), 5, 5);
-  });
-
-  document.addEventListener('mouseup', event => {
-    mousedown = false;
-  });
+  // canvas.addEventListener('wheel', event => {
+  //   // +/- 1
+  //   imageIndex += event.deltaY / Math.abs(event.deltaY);
+  //   // clamp to array indexes
+  //   imageIndex = Math.max(0, Math.min(images.length - 1, imageIndex));
+  // });
 }
 
-export function drawSomeShips() {
-  loadServerImage(image_manifest.ship_3.src, drawImage);
-
-}
-
-function drawImage(img) {
-  ctx.drawImage(img, 300, 300, img.width, img.height);
+function drawImage(img, x, y) {
+  ctx.drawImage(img, x, y, img.width, img.height);
 }

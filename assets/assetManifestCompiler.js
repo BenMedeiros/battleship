@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 
 /*
+* Run this manually as needed.
+*
 * Creates js manifests for every folder in assets so that they can be referenced
 * easily when coding rather than having to maintain paths manually.
 *
@@ -16,6 +18,11 @@ function createManifestForFolder(folder) {
 
   files.forEach((fileName) => {
     const ext = path.extname(fileName);
+    if (ext === '.js') {
+      console.info('Ignoring file ' + fileName);
+      return;
+    }
+
     const fileNoExt = fileName.substring(0, fileName.length - ext.length);
     const fileInfo = fs.statSync(fullPathToFolder + fileName);
 
@@ -25,7 +32,7 @@ function createManifestForFolder(folder) {
 
     exportMap[fileNoExt] = {
       fileName: fileName,
-      src: folderPath + fileName,
+      src: folderPath + folder + '/' + fileName,
       size: fileInfo.size
     };
   });

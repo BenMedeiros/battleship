@@ -155,81 +155,44 @@ Messages and timers controls by the userMessage.js
 /*
 Game board and word box formatting for gameboard.js
  */
-#gameboard {
-    display: flex;
-    flex-wrap: wrap;
-    max-width: 60rem;
-    border: solid;
+#sidebar {
+  min-width: 100px;
+  max-width: 200px;
+  min-height: 100px;
+  background: #b69f9f;
+  border: solid;
+  filter: drop-shadow(4px 4px 14px black);
+  overflow-y: auto;
 }
 
-.word {
-    border: solid black;
-    background-color: var(--color-menu-backdrop);
-    color: var(--color-menu-subtext);
-    min-height: calc(4rem * var(--zoom-size) / 10);
-    height: auto;
-    width: calc(7rem * var(--zoom-size) / 10);
-    flex-grow: 1;
-    max-width: calc(15rem * var(--zoom-size) / 10);;
-    /* prob need to auto scale this depending on word length*/
-    font-size: calc(1.4rem * var(--zoom-size) / 10);
-    text-align: center;
-    user-select: none;
-    -webkit-user-select: none;
-    overflow: hidden;
+#sidebar > div {
+  height: 150px;
+  border: solid green;
+  margin: 20px;
+  filter: drop-shadow(4px 4px 14px black);
+  z-index: 1;
+  transition: scale .3s;
 }
 
-.word.clicked {
-    color: var(--color-backdrop-hover);
+#sidebar > div:hover {
+  scale: 125%;
+  z-index: 2;
 }
 
-.red {
-    background-color: red;
+#sidebar > div.selected {
+  border: solid white;
+  scale: 125%;
 }
 
-.blue {
-    background-color: blue;
+#sidebar > div > h3 {
+  margin: 0;
+  background-color: #45a049;
+  height: 20%;
 }
 
-.word.neutral {
-    background-color: yellow;
-}
-
-.word.death {
-    background-color: black;
-}
-
-.word:hover:not(.red, .blue, .neutral, .death) {
-    border-color: green;
-}
-
-.word-guess {
-    display: flex;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
-}
-
-.player-guess-word {
-    color: white;
-    border-radius: 10%;
-    padding-inline: .8rem;
-    margin: .1rem;
-    font-size: 1rem;
-}
-
-.word.spy-red {
-    border-color: red;
-}
-
-.word.spy-blue {
-    border-color: blue;
-}
-
-.word.spy-death {
-    border-color: black;
-    background-color: black;
-}
-
-.word.spy-neutral {
-    border-color: yellow;
+#sidebar > div > img {
+  height: 80%;
+  width: 100%;
+  object-fit: scale-down;
+  background-color: #45a049;
 }
