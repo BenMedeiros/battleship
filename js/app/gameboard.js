@@ -26,10 +26,6 @@ function trackClick() {
 
   canvas.addEventListener('mousedown', (event) => {
     const {x, y} = getCursorPosition(canvas, event)
-    // ctx.fillStyle = 'rgb(5,5,5)';
-    // ctx.fillRect(Math.round(x), Math.round(y), 5, 5);
-
-    // loadServerImage(images[imageIndex].src, (img) => drawImage(img, x, y));
 
     const selectedAsset = img_manifest[getSelectedAssetKey()];
     if (!selectedAsset) return;
@@ -37,12 +33,6 @@ function trackClick() {
     loadServerImage(selectedAsset.src, (img) => drawImage(img, x, y));
   });
 
-  // canvas.addEventListener('wheel', event => {
-  //   // +/- 1
-  //   imageIndex += event.deltaY / Math.abs(event.deltaY);
-  //   // clamp to array indexes
-  //   imageIndex = Math.max(0, Math.min(images.length - 1, imageIndex));
-  // });
 }
 
 function drawImage(img, x, y) {
