@@ -28,7 +28,8 @@ console.log(game);
 let x = 0;
 
 for (const player of game.players) {
+  x = 0;
   for (const ship of game.gameConfig.ships) {
-    game.placeShip(player, ship, x++, 0, 0);
+    game.placeShip(player, ship, x++, 0, 90);
   }
 }

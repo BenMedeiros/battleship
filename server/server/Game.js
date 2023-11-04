@@ -1,10 +1,33 @@
 'use strict';
 
 import {createEmptyBoard} from "./playerBoards.js";
+import img_manifest from "../../assets/img/img_manifest.js";
 
 const gamePhases = {
   place_ships: 0,
+}
 
+let unq_id_ship = 0;
+
+class Ship {
+  constructor(size, asset) {
+    this.id = unq_id_ship++;
+    this.size = size;
+    this.asset = asset;
+  }
+}
+
+let unq_id_player = 0;
+
+class Player {
+  constructor(game, name, color) {
+    this.id = unq_id_player++;
+    this.name = name;
+    this.color = color;
+    this.playerBoard = createEmptyBoard(game.gameConfig.height, game.gameConfig.width);
+    // stores player ship locations
+    this.playerShips = [];
+  }
 }
 
 export class Game {
@@ -22,31 +45,17 @@ export class Game {
       width: 8,
       // ships in games and sizes
       ships: [
-        // {id: 0, size: 2},
-        // {id: 1, size: 3},
-        // {id: 2, size: 3},
-        {id: 3, size: 4},
-        {id: 4, size: 5}
+        new Ship(2, img_manifest.ship_2),
+        new Ship(3, img_manifest.ship_3),
+        new Ship(3, img_manifest.ship_3),
+        new Ship(4, img_manifest.ship_4)
       ]
     };
 
     // playerId and info
     this.players = [
-      {
-        id: 0,
-        name: 'Ben',
-        color: 'red',
-        playerBoard: createEmptyBoard(this.gameConfig.height, this.gameConfig.width),
-        // stores player ship locations
-        playerShips: []
-      },
-      {
-        id: 1,
-        name: 'Tom',
-        color: 'blue',
-        playerBoard: createEmptyBoard(this.gameConfig.height, this.gameConfig.width),
-        playerShips: []
-      }
+      new Player(this, 'Ben', 'red'),
+      new Player(this, 'Tom', 'blue')
     ];
 
     this.state = {
@@ -87,11 +96,10 @@ export class Game {
   }
 }
 
+// validate if player already has overlap with ships
 function checkIfShipSpaceOccupied(playerShips, x, y) {
-  console.log(playerShips, x, y);
   for (const playerShip of Object.values(playerShips)) {
     for (const existingSpaceXY of Object.values(playerShip.shipSpacesXY)) {
-      console.log(existingSpaceXY, x, y);
       if (x === existingSpaceXY.x && y === existingSpaceXY.y) {
         throw new Error(`Space ${x},${y}, already occupied by ship ${playerShip.ship.id}`);
       }
@@ -99,6 +107,7 @@ function checkIfShipSpaceOccupied(playerShips, x, y) {
   }
 }
 
+// place a ship for player in x/y/deg
 function buildShipSpaces(ship, x, y, rotationDeg) {
   if (rotationDeg === 0) {
     return buildShipSpacesXY(x, x + ship.size - 1, y, y);

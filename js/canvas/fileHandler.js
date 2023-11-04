@@ -35,12 +35,19 @@ function loadLocalFileImage(file, cb) {
   fr.readAsDataURL(file);
 }
 
+const serverImageCache = {};
+// loads the server image async if not loaded, otherwise return sync
 // loadServerImage('/img/004.png');
 export function loadServerImage(src, cb) {
+  if (serverImageCache[src]) return serverImageCache[src];
+
   const img = new Image();
   img.crossOrigin = "anonymous";
   img.src = src;
   // onload passes just event, so you have to send img
-  img.onload = cb.bind(null, img);
+  img.onload = () => {
+    serverImageCache[src] = img;
+    if (cb) cb(img);
+  };
 }
 

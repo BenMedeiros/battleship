@@ -107,9 +107,10 @@ table caption {
 }
 
 canvas {
-    border: solid;
-    /*width: 20rem;*/
-    /*width: 50rem;*/
+  position: absolute;
+  border: solid;
+  /*width: 20rem;*/
+  /*width: 50rem;*/
 }
 
 /*

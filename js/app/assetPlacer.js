@@ -1,6 +1,7 @@
 'use strict';
 
 import img_manifest from "../../assets/img/img_manifest.js";
+import {loadServerImage} from "../canvas/fileHandler.js";
 
 // asset from the sidebar user is using
 let selectedAssetKey = null
@@ -43,4 +44,10 @@ export function populateSidebar() {
 
 export function getSelectedAssetKey() {
   return selectedAssetKey;
+}
+
+export function getSelectedAssetImage() {
+  if (!selectedAssetKey) return;
+  const img = loadServerImage(img_manifest[selectedAssetKey].src);
+  return img;
 }
