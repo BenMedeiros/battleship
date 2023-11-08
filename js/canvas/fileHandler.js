@@ -41,6 +41,7 @@ const serverImageCache = {};
 export function loadServerImage(src, cb) {
   if (serverImageCache[src]) return serverImageCache[src];
 
+  console.log('loading from server');
   const img = new Image();
   img.crossOrigin = "anonymous";
   img.src = src;

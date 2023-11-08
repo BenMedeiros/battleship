@@ -10,9 +10,10 @@ const gamePhases = {
 let unq_id_ship = 0;
 
 class Ship {
-  constructor(size, asset) {
+  constructor(size, assetKey, asset) {
     this.id = unq_id_ship++;
     this.size = size;
+    this.assetKey = assetKey;
     this.asset = asset;
   }
 }
@@ -41,26 +42,31 @@ export class Game {
     this.gameConfig = {
       players: 2,
       // how many tiles on each player's side
-      height: 5,
-      width: 8,
+      height: 10,
+      width: 10,
       // ships in games and sizes
       ships: [
-        new Ship(2, img_manifest.ship_2),
-        new Ship(3, img_manifest.ship_3),
-        new Ship(3, img_manifest.ship_3),
-        new Ship(4, img_manifest.ship_4)
+        new Ship(2, 'ship_2', img_manifest.ship_2),
+        new Ship(3, 'ship_3', img_manifest.ship_3),
+        new Ship(3, 'ship_3', img_manifest.ship_3),
+        new Ship(4, 'ship_4', img_manifest.ship_4)
       ]
     };
 
     // playerId and info
     this.players = [
-      new Player(this, 'Ben', 'red'),
+      new Player(this, 'Ben', 'yellow'),
       new Player(this, 'Tom', 'blue')
     ];
 
     this.state = {
       phase: gamePhases.place_ships
     };
+  }
+
+  // server response of game state, sent for every server request for sync
+  getGameState() {
+    return JSON.stringify(this);
   }
 
   // place player ship at location

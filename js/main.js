@@ -3,9 +3,10 @@
 import {ButtonType} from "../html/tinyComponents/ButtonType.js";
 
 import gameConfigScreen from "./app/gameConfigScreen.js";
-import {setupCanvas} from "./app/gameboard.js";
+import {GridSystem} from "./app/GridSystem.js";
 import {populateSidebar} from "./app/assetPlacer.js";
 import {Game} from "../server/server/Game.js";
+import {GameProxy} from "../server/client/GameProxy.js";
 
 
 const gameConfigI = new ButtonType('game-config', 'Game Config',
@@ -18,18 +19,29 @@ const placeAssetsI = new ButtonType('place-assets', 'Place Assets',
   document.getElementById("navigation-bar"));
 
 
-setupCanvas();
 populateSidebar();
 
 
 const game = new Game();
 console.log(game);
 
-let x = 0;
 
-for (const player of game.players) {
-  x = 0;
+const gameProxyPlayer0 = new GameProxy(game, game.players[0]);
+const gameProxyPlayer1 = new GameProxy(game, game.players[1]);
+
+
+gameProxyPlayer0.syncGameState().then(async () => {
+  const gridSystem = new GridSystem(gameProxyPlayer0);
+  gridSystem.setupCanvas();
+  console.log(gridSystem);
+
+  let x = 0;
+
+
   for (const ship of game.gameConfig.ships) {
-    game.placeShip(player, ship, x++, 0, 90);
+    await gameProxyPlayer0.placeShip(ship, x++, 0, 90);
   }
-}
+
+  setTimeout(() => gridSystem.redrawPlayerShips(), 1000);
+
+});

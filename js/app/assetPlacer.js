@@ -11,6 +11,9 @@ export function populateSidebar() {
   const sidebarEl = document.getElementById('sidebar');
 
   for (const [key, obj] of Object.entries(img_manifest)) {
+    if (!key.startsWith('ship')) continue;
+    loadServerImage(img_manifest[key].src);
+
     const divWrapper = document.createElement('div');
     divWrapper.onclick = () => {
       if (selectedEl === divWrapper) {
