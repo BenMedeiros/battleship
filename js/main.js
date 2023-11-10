@@ -39,7 +39,7 @@ gameProxyPlayer0.syncGameState().then(async () => {
 
 
   for (const ship of game.gameConfig.ships) {
-    await gameProxyPlayer0.placeShip(ship, x++, 0, 90);
+    // await gameProxyPlayer0.placeShip(ship, x++, 0, 90);
   }
 
   setTimeout(() => gridSystem.redrawPlayerShips(), 1000);

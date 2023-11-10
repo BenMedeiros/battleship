@@ -12,6 +12,7 @@ export function populateSidebar() {
 
   for (const [key, obj] of Object.entries(img_manifest)) {
     if (!key.startsWith('ship')) continue;
+    // ship images are designed for 60px grid
     loadServerImage(img_manifest[key].src);
 
     const divWrapper = document.createElement('div');
@@ -54,3 +55,4 @@ export function getSelectedAssetImage() {
   const img = loadServerImage(img_manifest[selectedAssetKey].src);
   return img;
 }
+

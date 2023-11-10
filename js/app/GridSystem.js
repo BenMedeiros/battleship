@@ -2,7 +2,7 @@
 
 import {getCursorPosition, getLastCursorPosition, saveCursorPosition} from "../canvas/interactions.js";
 import {getSelectedAssetImage, getSelectedAssetKey} from "./assetPlacer.js";
-import {drawGrid} from "../canvas/drawHelpers.js";
+import {drawGrid, drawRotated} from "../canvas/drawHelpers.js";
 import {loadServerImage} from "../canvas/fileHandler.js";
 
 const canvas = document.getElementById('canvas');
@@ -24,6 +24,8 @@ class HoverProjection {
     this.gridY = -1;
     this.actualX = -1;
     this.actualY = -1;
+    this.rotation = 0;
+    this.lastDrawRotation = 0;
 
     this.img = null;
     this.timestamp = null;
@@ -32,7 +34,8 @@ class HoverProjection {
 
   clearLastDraw() {
     if (this.img) {
-      ctx_top.clearRect(this.actualX, this.actualY, this.img.width, this.img.height);
+      ctx_top.clearRect(0, 0, canvas_top.width, canvas_top.height);
+      // ctx_top.clearRect(this.actualX, this.actualY, this.img.width, this.img.height);
     }
   }
 
@@ -41,12 +44,14 @@ class HoverProjection {
   drawImage(img, mouseX, mouseY, timestamp) {
     const pixelXY = getLastCursorPosition();
     // don't redraw if mouse hasn't moved
-    if (this.mouseX === mouseX && this.mouseY === mouseY) return;
+    if (this.mouseX === mouseX && this.mouseY === mouseY
+      && this.lastDrawRotation === this.rotation) return;
 
     const gridXY = this.gridSystem.getGridLocationByPixelXY(pixelXY.x, pixelXY.y);
     if (!gridXY) return;
     // don't redraw if same grid cell
-    if (gridXY.x === this.gridX && gridXY.y === this.gridY) return;
+    if (gridXY.x === this.gridX && gridXY.y === this.gridY
+      && this.lastDrawRotation === this.rotation) return;
 
     this.clearLastDraw();
 
@@ -60,13 +65,16 @@ class HoverProjection {
     const actualY = this.gridSystem.getPixelY(gridXY.y);
 
     // draw image on the canvas since user placed it
-    ctx_top.drawImage(img, actualX, actualY, img.width, img.height);
+    // ctx_top.drawImage(img, actualX, actualY, img.width, img.height);
+    console.log(this.rotation);
+    drawRotated(ctx_top, img, actualX, actualY, this.rotation);
     this.mouseX = mouseX;
     this.mouseY = mouseY;
     this.gridX = gridXY.x;
     this.gridY = gridXY.y;
     this.actualX = actualX;
     this.actualY = actualY;
+    this.lastDrawRotation = this.rotation;
     this.img = img;
     this.timestamp = timestamp;
     this.counter++;
@@ -77,14 +85,22 @@ class HoverProjection {
 export class GridSystem {
   constructor(gameProxy) {
     this.gameProxy = gameProxy;
-    this.height = 600;
-    this.width = 600;
-    this.margin = 20;
+    this.height = 660;
+    this.width = 660;
+    this.margin = 30;
 
     // height of a cell per player
     this.gridCellHeight = () => (this.height - (2 * this.margin)) / this.gameProxy.getGameConfig().height;
     //width of a cell per player
     this.gridCellWidth = () => (this.width - (2 * this.margin)) / this.gameProxy.getGameConfig().width;
+
+    if (this.gridCellHeight() !== this.gridCellWidth()) {
+      throw new Error('Cell height and width should be equal for now');
+    } else if (this.gridCellWidth() !== 60) {
+      // TODO apply mipmap scaling for different grid sizes
+      throw new Error('Cell height/width should be 60 since to handle img sizes ' + this.gridCellWidth());
+    }
+
 
     if (this.gameProxy.getPlayers().length !== 2) throw new Error('Only supporting 2 players atm');
     this.playerFieldsMap = {};
@@ -112,7 +128,7 @@ export class GridSystem {
     canvas_top.width = this.width;
 
     ctx.fillStyle = 'rgb(66,135,133)';
-    ctx.fillRect(0, 0, 600, 600);
+    ctx.fillRect(0, 0, this.width, this.height);
 
     this.hoverProjection = new HoverProjection(this);
     this.handleMouseEvents();
@@ -153,11 +169,10 @@ export class GridSystem {
   redrawPlayerShips() {
     for (const player of Object.values(this.gameProxy.getPlayers())) {
       for (const playerShip of Object.values(player.playerShips)) {
-        console.log(playerShip.ship.asset);
         const img = loadServerImage(playerShip.ship.asset.src);
         if (img) {
-          console.log('foo');
-          ctx.drawImage(img, this.getPixelX(playerShip.x), this.getPixelY(playerShip.y), img.width, img.height);
+          drawRotated(ctx, img, this.getPixelX(playerShip.x), this.getPixelY(playerShip.y), playerShip.rotationDeg);
+          // ctx.drawImage(img, this.getPixelX(playerShip.x), this.getPixelY(playerShip.y), img.width, img.height);
         }
       }
     }
@@ -178,12 +193,17 @@ export class GridSystem {
 
       const shipAssetKey = getSelectedAssetKey();
       if (!shipAssetKey) return;
-      const playerShip = this.gameProxy.getPlayers().playerShips.find(ps => ps.ship.assetKey === shipAssetKey);
-      if (!playerShip) throw new Error('Player ship not found for asset');
-      this.gameProxy.placeShip(playerShip.ship, xy.x, xy.y, 0);
-
-      // TODO attach this to event or call from GameProxy
-      this.redrawPlayerShips();
+      console.log(this.gameProxy);
+      const ship = this.gameProxy.getGameConfig().ships.find(sh => sh.assetKey === shipAssetKey);
+      if (!ship) {
+        throw new Error('Ship not found for asset');
+      }
+      this.gameProxy.placeShip(ship, xy.x, xy.y, this.hoverProjection.rotation)
+        // -90 cause that's the image difference between
+        .then(() => {
+          // TODO attach this to event or call from GameProxy
+          this.redrawPlayerShips();
+        });
     });
     // start animating when the mouse is over canvas
     canvas_top.addEventListener('mouseover', event => {
@@ -197,6 +217,14 @@ export class GridSystem {
       this.hoverProjection.animating = false;
       saveCursorPosition(canvas, event);
       this.hoverProjection.clearLastDraw();
+    });
+    // scroll to rotate img
+    canvas_top.addEventListener('wheel', event => {
+      if (event.wheelDeltaY > 0) {
+        this.hoverProjection.rotation += 90;
+      } else if (event.wheelDeltaY < 0) {
+        this.hoverProjection.rotation -= 90;
+      }
     });
   }
 
@@ -212,4 +240,10 @@ export class GridSystem {
   }
 }
 
-
+//
+// number  visually/expected
+// 0       90
+// 270     0
+// 180     270
+// 90      180
+//

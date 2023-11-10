@@ -49,7 +49,8 @@ export class Game {
         new Ship(2, 'ship_2', img_manifest.ship_2),
         new Ship(3, 'ship_3', img_manifest.ship_3),
         new Ship(3, 'ship_3', img_manifest.ship_3),
-        new Ship(4, 'ship_4', img_manifest.ship_4)
+        new Ship(4, 'ship_4', img_manifest.ship_4),
+        new Ship(5, 'ship_5', img_manifest.ship_5)
       ]
     };
 
@@ -116,13 +117,13 @@ function checkIfShipSpaceOccupied(playerShips, x, y) {
 // place a ship for player in x/y/deg
 function buildShipSpaces(ship, x, y, rotationDeg) {
   if (rotationDeg === 0) {
-    return buildShipSpacesXY(x, x + ship.size - 1, y, y);
-  } else if (rotationDeg === 90) {
     return buildShipSpacesXY(x, x, y, y + ship.size - 1);
-  } else if (rotationDeg === 180) {
+  } else if (rotationDeg === 90) {
     return buildShipSpacesXY(x - ship.size + 1, x, y, y);
-  } else if (rotationDeg === 270) {
+  } else if (rotationDeg === 180) {
     return buildShipSpacesXY(x, x, y - ship.size + 1, y);
+  } else if (rotationDeg === 270) {
+    return buildShipSpacesXY(x, x + ship.size - 1, y, y);
   }
 }
 

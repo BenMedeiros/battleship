@@ -17,3 +17,15 @@ export function drawGrid(ctx, color, x0, x1, y0, y1, cellWidth, cellHeight) {
   ctx.stroke();
   ctx.closePath();
 }
+
+export function drawRotated(ctx, img, x, y, angle) {
+  ctx.save();
+  // offset around the rotation point cause of the image
+  ctx.translate(x + img.width / 2, y + img.width / 2);
+  ctx.rotate((angle) * Math.PI / 180);
+  const rotationPointX = img.width / 2;
+  const rotationPointY = img.width / 2;
+  ctx.translate(-rotationPointX, -rotationPointY);
+  ctx.drawImage(img, 0, 0);
+  ctx.restore();
+}

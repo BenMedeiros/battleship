@@ -34,6 +34,6 @@ export class GameProxy {
     await this.gameAPI.placeShip(this.player, ship, x, y, rotationDeg);
     //   pretend we got a response from the server, and technically
     //   anything could have occurred
-    this.syncGameState().then();
+    await this.syncGameState();
   }
 }
