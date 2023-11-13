@@ -19,7 +19,33 @@ const placeAssetsI = new ButtonType('place-assets', 'Place Assets',
   document.getElementById("navigation-bar"));
 
 
+const changePlayerI = new ButtonType('change-player', 'Change Player',
+  changePlayer, false, null,
+  document.getElementById("navigation-bar"));
+
+
 populateSidebar();
+
+
+function changePlayer() {
+  if (currentPlayerGameProxy === gameProxyPlayer0) {
+    currentPlayerGameProxy = gameProxyPlayer1;
+  } else {
+    currentPlayerGameProxy = gameProxyPlayer0;
+  }
+
+  const el = document.getElementById('team-turn');
+  el.innerText = currentPlayerGameProxy.player.name;
+  console.log(currentPlayerGameProxy.player);
+}
+
+function setupGridSystemAndSync(gameProxy) {
+  gameProxy.syncGameState().then(async () => {
+    const gridSystem = new GridSystem(gameProxy);
+    gameProxy.setGridSystem(gridSystem);
+    gridSystem.setupCanvas();
+  });
+}
 
 
 const game = new Game();
@@ -28,20 +54,8 @@ console.log(game);
 
 const gameProxyPlayer0 = new GameProxy(game, game.players[0]);
 const gameProxyPlayer1 = new GameProxy(game, game.players[1]);
+let currentPlayerGameProxy = gameProxyPlayer0;
 
+setupGridSystemAndSync(gameProxyPlayer0);
+setupGridSystemAndSync(gameProxyPlayer1);
 
-gameProxyPlayer0.syncGameState().then(async () => {
-  const gridSystem = new GridSystem(gameProxyPlayer0);
-  gridSystem.setupCanvas();
-  console.log(gridSystem);
-
-  let x = 0;
-
-
-  for (const ship of game.gameConfig.ships) {
-    // await gameProxyPlayer0.placeShip(ship, x++, 0, 90);
-  }
-
-  setTimeout(() => gridSystem.redrawPlayerShips(), 1000);
-
-});

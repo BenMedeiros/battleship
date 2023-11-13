@@ -21,10 +21,11 @@ class Ship {
 let unq_id_player = 0;
 
 class Player {
-  constructor(game, name, color) {
+  constructor(game, name, color, region) {
     this.id = unq_id_player++;
     this.name = name;
     this.color = color;
+    this.region = region;
     this.playerBoard = createEmptyBoard(game.gameConfig.height, game.gameConfig.width);
     // stores player ship locations
     this.playerShips = [];
@@ -56,8 +57,8 @@ export class Game {
 
     // playerId and info
     this.players = [
-      new Player(this, 'Ben', 'yellow'),
-      new Player(this, 'Tom', 'blue')
+      new Player(this, 'Ben', 'yellow', 'top'),
+      new Player(this, 'Tom', 'blue', 'bottom')
     ];
 
     this.state = {
@@ -88,6 +89,18 @@ export class Game {
         throw new Error('Out of bounds on X ' + x + ',' + y);
       } else if (y < 0 || y >= this.gameConfig.height) {
         throw new Error('Out of bounds on Y ' + x + ',' + y);
+      }
+      // check if space in player region
+      if (player.region === 'top') {
+        if (y + 1 > Math.floor(this.gameConfig.height / 2)) {
+          throw new Error('You must place ships in top region');
+        }
+      } else if (player.region === 'bottom') {
+        if (y < Math.ceil(this.gameConfig.height / 2)) {
+          throw new Error('You must place ships in bottom region.')
+        }
+      } else {
+        throw new Error('Region type not supported');
       }
 
       checkIfShipSpaceOccupied(player.playerShips, x, y);

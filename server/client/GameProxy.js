@@ -13,6 +13,16 @@ export class GameProxy {
     this.gameAPI = game;
     this.player = player;
     this.gameState = null;
+
+    this.pollIntervalId = setInterval(this.syncGameState.bind(this), 4000);
+  }
+
+  destroy() {
+    clearInterval(this.pollIntervalId);
+  }
+
+  bindGridSystem(gridSystem) {
+    this.gridSystem = gridSystem;
   }
 
   getGameConfig() {
@@ -23,11 +33,16 @@ export class GameProxy {
     return this.gameState.players;
   }
 
+  setGridSystem(gridSystem) {
+    this.gridSystem = gridSystem;
+  }
+
   async syncGameState() {
     const newGameState = await JSON.parse(this.gameAPI.getGameState());
     //  would be better to not redraw everything but check for diffs
     // but for now just redrawing everything
     this.gameState = newGameState;
+    if (this.gridSystem) this.gridSystem.redrawPlayerShips();
   }
 
   async placeShip(ship, x, y, rotationDeg) {
