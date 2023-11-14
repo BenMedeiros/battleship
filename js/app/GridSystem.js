@@ -15,9 +15,9 @@ export class GridSystem {
   constructor(gameProxy) {
     this.gameProxy = gameProxy;
     this.gameProxy.bindGridSystem(this);
-    this.height = 660;
-    this.width = 660;
     this.margin = 30;
+    this.height = (this.gameProxy.getGameConfig().height * 60) + (2 * this.margin);
+    this.width = (this.gameProxy.getGameConfig().width * 60) + (2 * this.margin);
 
     // height of a cell per player
     this.gridCellHeight = () => (this.height - (2 * this.margin)) / this.gameProxy.getGameConfig().height;
@@ -33,22 +33,6 @@ export class GridSystem {
 
 
     if (this.gameProxy.getPlayers().length !== 2) throw new Error('Only supporting 2 players atm');
-    this.playerFieldsMap = {};
-    // only doing 2 players for now
-    this.playerFieldsMap[this.gameProxy.getPlayers()[0].id] = {
-      player: this.gameProxy.getPlayers()[0],
-      x0: this.margin,
-      x1: this.width - this.margin,
-      y0: this.margin,
-      y1: this.height / 2
-    };
-    this.playerFieldsMap[this.gameProxy.getPlayers()[1].id] = {
-      player: this.gameProxy.getPlayers()[1],
-      x0: this.margin,
-      x1: this.width - this.margin,
-      y0: this.height / 2,
-      y1: this.height - this.margin
-    };
   }
 
   setupCanvas() {
@@ -63,8 +47,10 @@ export class GridSystem {
     this.ctx.fillStyle = 'rgb(66,135,133)';
     this.ctx.fillRect(0, 0, this.width, this.height);
 
-    for (const {player, x0, x1, y0, y1} of Object.values(this.playerFieldsMap)) {
-      drawGrid(this.ctx, player.color, x0, x1, y0, y1, this.gridCellWidth(), this.gridCellHeight());
+    for (const player of Object.values(this.gameProxy.getPlayers())) {
+      drawGrid(this.ctx, player.color, this.getPixelX(player.region.x0), this.getPixelX(player.region.x1),
+        this.getPixelY(player.region.y0), this.getPixelY(player.region.y1),
+        this.gridCellWidth(), this.gridCellHeight());
     }
 
     canvas_wrapper.appendChild(this.canvas);

@@ -1,16 +1,17 @@
 'use strict';
 
+// grid draws to next cell since the x/y are points not defining areas
 export function drawGrid(ctx, color, x0, x1, y0, y1, cellWidth, cellHeight) {
   ctx.beginPath();
   // vertical lines
-  for (let i = x0; i <= x1; i += cellWidth) {
+  for (let i = x0; i <= x1 + cellWidth; i += cellWidth) {
     ctx.moveTo(i, y0);
-    ctx.lineTo(i, y1);
+    ctx.lineTo(i, y1 + cellWidth);
   }
   //horizontal lines
-  for (let i = y0; i <= y1; i += cellHeight) {
+  for (let i = y0; i <= y1 + cellHeight; i += cellHeight) {
     ctx.moveTo(x0, i);
-    ctx.lineTo(x1, i);
+    ctx.lineTo(x1 + cellHeight, i);
   }
 
   ctx.strokeStyle = color;

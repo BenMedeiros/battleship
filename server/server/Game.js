@@ -25,7 +25,27 @@ class Player {
     this.id = unq_id_player++;
     this.name = name;
     this.color = color;
-    this.region = region;
+
+    if (region === 'top') {
+      this.region = {
+        name: 'top',
+        x0: 0,
+        x1: game.gameConfig.width - 1,
+        y0: 0,
+        y1: Math.floor(game.gameConfig.height / 2) - 1
+      };
+    } else if (region === 'bottom') {
+      this.region = {
+        name: 'bottom',
+        x0: 0,
+        x1: game.gameConfig.width - 1,
+        y0: Math.ceil(game.gameConfig.height / 2),
+        y1: game.gameConfig.height - 1
+      }
+    } else {
+      throw new Error('Region type not supported');
+    }
+
     this.playerBoard = createEmptyBoard(game.gameConfig.height, game.gameConfig.width);
     // stores player ship locations
     this.playerShips = [];
@@ -43,8 +63,8 @@ export class Game {
     this.gameConfig = {
       players: 2,
       // how many tiles on each player's side
-      height: 10,
-      width: 10,
+      height: 9,
+      width: 5,
       // ships in games and sizes
       ships: [
         new Ship(2, 'ship_2', img_manifest.ship_2),
@@ -91,16 +111,10 @@ export class Game {
         throw new Error('Out of bounds on Y ' + x + ',' + y);
       }
       // check if space in player region
-      if (player.region === 'top') {
-        if (y + 1 > Math.floor(this.gameConfig.height / 2)) {
-          throw new Error('You must place ships in top region');
-        }
-      } else if (player.region === 'bottom') {
-        if (y < Math.ceil(this.gameConfig.height / 2)) {
-          throw new Error('You must place ships in bottom region.')
-        }
-      } else {
-        throw new Error('Region type not supported');
+      if (x < player.region.x0 || x > player.region.x1) {
+        throw new Error('Outside player region X');
+      } else if (y < player.region.y0 || y > player.region.y1) {
+        throw new Error('Outside player region Y');
       }
 
       checkIfShipSpaceOccupied(player.playerShips, x, y);
