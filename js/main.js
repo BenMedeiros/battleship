@@ -24,9 +24,6 @@ const changePlayerI = new ButtonType('change-player', 'Change Player',
   document.getElementById("navigation-bar"));
 
 
-populateSidebar();
-
-
 function changePlayer() {
   if (currentPlayerGameProxy === gameProxyPlayer0) {
     currentPlayerGameProxy = gameProxyPlayer1;
@@ -59,3 +56,6 @@ let currentPlayerGameProxy = gameProxyPlayer0;
 setupGridSystemAndSync(gameProxyPlayer0);
 setupGridSystemAndSync(gameProxyPlayer1);
 
+setTimeout(() => {
+  populateSidebar(currentPlayerGameProxy.getGameConfig().ships);
+}, 200);

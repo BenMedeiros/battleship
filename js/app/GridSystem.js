@@ -1,7 +1,5 @@
 'use strict';
 
-import {getCursorPosition, getLastCursorPosition, saveCursorPosition} from "../canvas/interactions.js";
-import {getSelectedAssetImage, getSelectedAssetKey} from "./assetPlacer.js";
 import {drawGrid, drawRotated} from "../canvas/drawHelpers.js";
 import {loadServerImage} from "../canvas/fileHandler.js";
 import {HoverProjection} from "./HoverProjection.js";

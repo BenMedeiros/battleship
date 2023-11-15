@@ -3,7 +3,7 @@
 // keep track of where the hover is drawn so it can be quickly erased on top layer
 import {getLastCursorPosition, saveCursorPosition} from "../canvas/interactions.js";
 import {drawRotated} from "../canvas/drawHelpers.js";
-import {getSelectedAssetImage, getSelectedAssetKey} from "./assetPlacer.js";
+import {getSelectedAsset, getSelectedAssetImage} from "./assetPlacer.js";
 
 export class HoverProjection {
   constructor(gridSystem) {
@@ -99,9 +99,7 @@ export class HoverProjection {
       const xy = this.gridSystem.getGridLocationByPixelXY(pixelXY.x, pixelXY.y);
       // if (xy) this.highlightGridLocation(xy.x, xy.y);
 
-      const shipAssetKey = getSelectedAssetKey();
-      if (!shipAssetKey) return;
-      const ship = this.gridSystem.gameProxy.getGameConfig().ships.find(sh => sh.assetKey === shipAssetKey);
+      const ship = getSelectedAsset();
       if (!ship) {
         throw new Error('Ship not found for asset');
       }

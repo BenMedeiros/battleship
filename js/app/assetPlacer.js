@@ -1,19 +1,20 @@
 'use strict';
 
-import img_manifest from "../../assets/img/img_manifest.js";
 import {loadServerImage} from "../canvas/fileHandler.js";
 
 // asset from the sidebar user is using
 let selectedAssetKey = null
 let selectedEl = null;
 
-export function populateSidebar() {
+let assets = null;
+
+export function populateSidebar(ships) {
+  assets = ships;
   const sidebarEl = document.getElementById('sidebar');
 
-  for (const [key, obj] of Object.entries(img_manifest)) {
-    if (!key.startsWith('ship')) continue;
+  for (const [i, ship] of Object.entries(ships)) {
     // ship images are designed for 60px grid
-    loadServerImage(img_manifest[key].src);
+    loadServerImage(ship.asset.src);
 
     const divWrapper = document.createElement('div');
     divWrapper.onclick = () => {
@@ -23,23 +24,23 @@ export function populateSidebar() {
         selectedAssetKey = null;
       } else if (selectedEl === null) {
         selectedEl = divWrapper;
-        selectedAssetKey = key;
+        selectedAssetKey = i;
       } else {
         selectedEl.classList.remove('selected');
         selectedEl = divWrapper;
-        selectedAssetKey = key;
+        selectedAssetKey = i;
       }
 
       if (selectedEl) selectedEl.classList.add('selected');
     }
 
     const title = document.createElement('h3');
-    title.innerText = key;
+    title.innerText = ship.assetKey;
     divWrapper.appendChild(title);
 
     const image = document.createElement('img');
-    image.src = obj.src;
-    image.alt = obj.fileName;
+    image.src = ship.asset.src;
+    image.alt = ship.asset.fileName;
     divWrapper.appendChild(image);
 
     sidebarEl.appendChild(divWrapper);
@@ -50,9 +51,14 @@ export function getSelectedAssetKey() {
   return selectedAssetKey;
 }
 
+export function getSelectedAsset() {
+  if (!selectedAssetKey) return;
+  return assets[selectedAssetKey];
+}
+
 export function getSelectedAssetImage() {
   if (!selectedAssetKey) return;
-  const img = loadServerImage(img_manifest[selectedAssetKey].src);
+  const img = loadServerImage(assets[selectedAssetKey].asset.src);
   return img;
 }
 

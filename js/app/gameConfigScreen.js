@@ -7,7 +7,6 @@
 
 
 import {ButtonType} from "../../html/tinyComponents/ButtonType.js";
-import clientActions from "../../server/client/clientActions.js";
 import {SelectInputType} from "../../html/tinyComponents/SelectInputType.js";
 import {LabelInputType} from "../../html/tinyComponents/LabelInputType.js";
 import userMessage from "../../html/components/userMessage.js";
@@ -17,7 +16,7 @@ let winScreenElement = null;
 // create screen to show if player won or lost
 function createWinScreen() {
   if (winScreenElement) return;
-  const gameState = clientActions.getCachedGameState();
+  const gameState = {};
 
   winScreenElement = document.createElement("div");
   winScreenElement.id = 'game-config-screen';
