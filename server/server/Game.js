@@ -1,7 +1,7 @@
 'use strict';
 
-import {createEmptyBoard} from "./playerBoards.js";
 import img_manifest from "../../assets/img/img_manifest.js";
+import {Player} from "./Player.js";
 
 const gamePhases = {
   place_ships: 0,
@@ -18,39 +18,6 @@ class Ship {
   }
 }
 
-let unq_id_player = 0;
-
-class Player {
-  constructor(game, name, color, region) {
-    this.id = unq_id_player++;
-    this.name = name;
-    this.color = color;
-
-    if (region === 'top') {
-      this.region = {
-        name: 'top',
-        x0: 0,
-        x1: game.gameConfig.width - 1,
-        y0: 0,
-        y1: Math.floor(game.gameConfig.height / 2) - 1
-      };
-    } else if (region === 'bottom') {
-      this.region = {
-        name: 'bottom',
-        x0: 0,
-        x1: game.gameConfig.width - 1,
-        y0: Math.ceil(game.gameConfig.height / 2),
-        y1: game.gameConfig.height - 1
-      }
-    } else {
-      throw new Error('Region type not supported');
-    }
-
-    this.playerBoard = createEmptyBoard(game.gameConfig.height, game.gameConfig.width);
-    // stores player ship locations
-    this.playerShips = [];
-  }
-}
 
 export class Game {
   constructor() {
@@ -80,22 +47,25 @@ export class Game {
       new Player(this, 'Tom', 'blue', 'bottom')
     ];
 
-    this.state = {
-      phase: gamePhases.place_ships
-    };
+    this.phase = gamePhases.place_ships;
   }
 
   // server response of game state, sent for every server request for sync
   getGameState() {
+    // console.log(this);
     return JSON.stringify(this);
   }
 
   // place player ship at location
-  placeShip(player, ship, x, y, rotationDeg) {
+  placeShip(playerId, ship, x, y, rotationDeg) {
+    const player = this.players.find(ply => ply.id === playerId);
+
+    if (this.phase !== gamePhases.place_ships) {
+      throw new Error('Cant place ships during this phase');
+    }
     if (player.playerShips.find(el => el.ship.id === ship.id)) {
       throw new Error('Ship ' + ship.id + ' already placed');
     }
-
 
     // get 0-359deg range
     rotationDeg = ((rotationDeg % 360) + 360) % 360;
@@ -126,7 +96,11 @@ export class Game {
       rotationDeg,
       shipSpacesXY
     });
+
+    console.log(player);
+    player.updatePlayerStatus(this);
   }
+
 }
 
 // validate if player already has overlap with ships

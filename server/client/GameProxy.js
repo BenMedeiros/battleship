@@ -7,12 +7,19 @@
 * */
 
 
+import userMessage from "../../html/components/userMessage.js";
+import {ButtonType} from "../../html/tinyComponents/ButtonType.js";
+import {PlayerStatus} from "../server/Player.js";
+
 export class GameProxy {
   constructor(game, player) {
     this.isLocalServer = true;
     this.gameAPI = game;
-    this.player = player;
+    this.playerId = player.id;
     this.gameState = null;
+    this.controls = {
+      shipsReady: createShipsReadyBtn()
+    };
 
     this.pollIntervalId = setInterval(this.syncGameState.bind(this), 4000);
   }
@@ -33,6 +40,10 @@ export class GameProxy {
     return this.gameState.players;
   }
 
+  getPlayer() {
+    return this.gameState.players.find(ply => ply.id === this.playerId);
+  }
+
   setGridSystem(gridSystem) {
     this.gridSystem = gridSystem;
   }
@@ -43,12 +54,29 @@ export class GameProxy {
     // but for now just redrawing everything
     this.gameState = newGameState;
     if (this.gridSystem) this.gridSystem.redrawPlayerShips();
+
+    // when sync, player status may change so update btns accordingly
+    this.controls.shipsReady.disableIf(this.getPlayer().status !== PlayerStatus.ships_placed);
+
   }
 
   async placeShip(ship, x, y, rotationDeg) {
-    await this.gameAPI.placeShip(this.player, ship, x, y, rotationDeg);
+    try {
+      await this.gameAPI.placeShip(this.getPlayer().id, ship, x, y, rotationDeg);
+    } catch (e) {
+      userMessage.errorMsg(e);
+    }
+
     //   pretend we got a response from the server, and technically
     //   anything could have occurred
     await this.syncGameState();
   }
+}
+
+
+function createShipsReadyBtn() {
+  return new ButtonType('ships-ready', 'Ships Ready',
+    () => {
+    }, true, null,
+    document.getElementById("controls-bar"));
 }
