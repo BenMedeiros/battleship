@@ -7,10 +7,11 @@ let selectedAssetKey = null
 let selectedEl = null;
 
 let assets = null;
+let sidebarEl = null;
 
 export function populateSidebar(ships) {
   assets = ships;
-  const sidebarEl = document.getElementById('sidebar');
+  sidebarEl = document.getElementById('sidebar');
 
   for (const [i, ship] of Object.entries(ships)) {
     // ship images are designed for 60px grid
@@ -45,6 +46,10 @@ export function populateSidebar(ships) {
 
     sidebarEl.appendChild(divWrapper);
   }
+}
+
+export function hideSidebar() {
+  sidebarEl.style.display = 'none';
 }
 
 export function getSelectedAssetKey() {

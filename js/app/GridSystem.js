@@ -81,8 +81,30 @@ export class GridSystem {
     return {x, y};
   }
 
+  isPlayerRegion(gridXY) {
+    if (!gridXY) return false;
+    const playerRegion = this.gameProxy.getPlayer().region;
+    if (playerRegion.x0 > gridXY.x || playerRegion.x1 < gridXY.x) {
+      return false;
+    } else if (playerRegion.y0 > gridXY.y || playerRegion.y1 < gridXY.y) {
+      return false;
+    }
+    return true;
+  }
+
+  isOpponentRegion(gridXY) {
+    if (!gridXY) return false;
+    const opponentRegion = this.gameProxy.getOpponent().region;
+    if (opponentRegion.x0 > gridXY.x || opponentRegion.x1 < gridXY.x) {
+      return false;
+    } else if (opponentRegion.y0 > gridXY.y || opponentRegion.y1 < gridXY.y) {
+      return false;
+    }
+    return true;
+  }
+
   highlightGridLocation(x, y) {
-    this.ctx.fillStyle = 'rgb(140,60,60)';
+    this.ctx.fillStyle = 'rgba(255,0,0,0.5)';
     this.ctx.fillRect(this.getPixelX(x), this.getPixelY(y), this.gridCellWidth(), this.gridCellHeight());
   }
 

@@ -5,11 +5,7 @@
 *
 * */
 
-const tileStates = {
-  empty: 0,
-  hit: 1,
-  miss: 2
-}
+import {tileStates} from "./statuses.js";
 
 export function createEmptyBoard(height, width) {
   const board = [];

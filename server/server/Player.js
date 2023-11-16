@@ -1,18 +1,8 @@
 'use strict';
 
-
-import {createEmptyBoard} from "./playerBoards.js";
+import {PlayerStatus, tileStates} from "./statuses.js";
 
 let unq_id_player = 0;
-
-export const PlayerStatus = {
-  // start of game, player in process of placing ships
-  placing_ships: 0,
-  // player has placed all ships, waiting for them to confirm ready
-  ships_placed: 1,
-  // player confirmed ships are placed and locked in
-  ships_ready: 2
-}
 
 export class Player {
   constructor(game, name, color, region) {
@@ -41,9 +31,17 @@ export class Player {
       throw new Error('Region type not supported');
     }
 
-    this.playerBoard = createEmptyBoard(game.gameConfig.height, game.gameConfig.width);
     // stores player ship locations
     this.playerShips = [];
+  }
+
+  isPlayerRegion(x, y) {
+    if (this.region.x0 > x || this.region.x1 < x) {
+      return false;
+    } else if (this.region.y0 > y || this.region.y1 < y) {
+      return false;
+    }
+    return true;
   }
 
   updatePlayerStatus(game) {
@@ -51,5 +49,34 @@ export class Player {
       const playerReady = game.gameConfig.ships.length === this.playerShips.length;
       this.status = playerReady ? PlayerStatus.ships_placed : PlayerStatus.placing_ships;
     }
+  }
+
+  shipsReady() {
+    if (this.status === PlayerStatus.placing_ships) {
+      throw new Error('Ships not all placed yet');
+    } else if (this.status === PlayerStatus.ships_placed) {
+      this.status = PlayerStatus.ships_ready;
+    } else {
+      throw new Error('Ship placing phase already over');
+    }
+  }
+
+  planAttack() {
+    if (this.status === PlayerStatus.ships_ready) {
+      this.status = PlayerStatus.planning_attack;
+    } else {
+      throw new Error('Not ready to plan attack');
+    }
+  }
+
+  isHit(x, y) {
+    for (const playerShip of this.playerShips) {
+      for (const shipSpace of playerShip.shipSpacesXY) {
+        if (x === shipSpace.x && y === shipSpace.y) {
+          return tileStates.hit;
+        }
+      }
+    }
+    return tileStates.miss;
   }
 }

@@ -2,10 +2,8 @@
 
 import img_manifest from "../../assets/img/img_manifest.js";
 import {Player} from "./Player.js";
-
-const gamePhases = {
-  place_ships: 0,
-}
+import {PlayerStatus, GamePhase, tileStates} from "./statuses.js";
+import {createEmptyBoard} from "./playerBoards.js";
 
 let unq_id_ship = 0;
 
@@ -17,7 +15,6 @@ class Ship {
     this.asset = asset;
   }
 }
-
 
 export class Game {
   constructor() {
@@ -35,9 +32,9 @@ export class Game {
       // ships in games and sizes
       ships: [
         new Ship(2, 'ship_2', img_manifest.ship_2),
-        new Ship(3, 'ship_3', img_manifest.ship_3),
-        new Ship(4, 'ship_4', img_manifest.ship_4),
-        new Ship(5, 'ship_5', img_manifest.ship_5)
+        new Ship(3, 'ship_3', img_manifest.ship_3)
+        // new Ship(4, 'ship_4', img_manifest.ship_4),
+        // new Ship(5, 'ship_5', img_manifest.ship_5)
       ]
     };
 
@@ -47,7 +44,8 @@ export class Game {
       new Player(this, 'Tom', 'blue', 'bottom')
     ];
 
-    this.phase = gamePhases.place_ships;
+    this.phase = GamePhase.place_ships;
+    this.board = createEmptyBoard(this.gameConfig.height, this.gameConfig.width);
   }
 
   // server response of game state, sent for every server request for sync
@@ -56,11 +54,19 @@ export class Game {
     return JSON.stringify(this);
   }
 
+  getPlayerFromId(playerId) {
+    return this.players.find(ply => ply.id === playerId);
+  }
+
+  getOpponent(player) {
+    return this.players.find(ply => ply.id !== player.id);
+  }
+
   // place player ship at location
   placeShip(playerId, ship, x, y, rotationDeg) {
-    const player = this.players.find(ply => ply.id === playerId);
+    const player = this.getPlayerFromId(playerId);
 
-    if (this.phase !== gamePhases.place_ships) {
+    if (this.phase !== GamePhase.place_ships) {
       throw new Error('Cant place ships during this phase');
     }
     if (player.playerShips.find(el => el.ship.id === ship.id)) {
@@ -101,6 +107,35 @@ export class Game {
     player.updatePlayerStatus(this);
   }
 
+  shipsReady(playerId) {
+    const player = this.getPlayerFromId(playerId);
+    player.shipsReady();
+
+    // check if all players are ready for combat
+    for (const player of this.players) {
+      if (player.status !== PlayerStatus.ships_ready) {
+        return;
+      }
+    }
+    this.phase = GamePhase.fight;
+    this.players.forEach(ply => ply.planAttack());
+  }
+
+  attackLocation(playerId, x, y) {
+    const player = this.getPlayerFromId(playerId);
+    if (player.status !== PlayerStatus.planning_attack) {
+      throw new Error('Not your attack planning phase');
+    }
+
+    const opponent = this.getOpponent(player);
+    if (!opponent.isPlayerRegion(x, y)) {
+      throw new Error('That is not your opponents region');
+    } else if (this.board[x][y] !== tileStates.empty) {
+      throw new Error('Tile already attacked');
+    }
+    this.board[x][y] = opponent.isHit(x, y);
+    console.log(this.board);
+  }
 }
 
 // validate if player already has overlap with ships

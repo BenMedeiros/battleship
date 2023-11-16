@@ -13,29 +13,6 @@ const gameConfigI = new ButtonType('game-config', 'Game Config',
   gameConfigScreen.createWinScreen, false, null,
   document.getElementById("navigation-bar"));
 
-const placeAssetsI = new ButtonType('place-assets', 'Place Assets',
-  () => {
-  }, false, null,
-  document.getElementById("navigation-bar"));
-
-
-const changePlayerI = new ButtonType('change-player', 'Change Player',
-  changePlayer, false, null,
-  document.getElementById("navigation-bar"));
-
-
-function changePlayer() {
-  if (currentPlayerGameProxy === gameProxyPlayer0) {
-    currentPlayerGameProxy = gameProxyPlayer1;
-  } else {
-    currentPlayerGameProxy = gameProxyPlayer0;
-  }
-
-  const el = document.getElementById('team-turn');
-  el.innerText = currentPlayerGameProxy.player.name;
-  console.log(currentPlayerGameProxy.player);
-}
-
 function setupGridSystemAndSync(gameProxy) {
   gameProxy.syncGameState().then(async () => {
     const gridSystem = new GridSystem(gameProxy);
