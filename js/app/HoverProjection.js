@@ -4,7 +4,8 @@
 import {getLastCursorPosition, saveCursorPosition} from "../canvas/interactions.js";
 import {drawRotated} from "../canvas/drawHelpers.js";
 import {getSelectedAsset, getSelectedAssetImage} from "./assetPlacer.js";
-import {GamePhase} from "../../server/server/statuses.js";
+import {GamePhase, PlayerStatus} from "../../server/server/statuses.js";
+import userMessage from "../../html/components/userMessage.js";
 
 export class HoverProjection {
   constructor(gridSystem) {
@@ -77,10 +78,17 @@ export class HoverProjection {
       drawRotated(this.ctx, img, actualX, actualY, this.rotation);
 
     } else if (this.gridSystem.gameProxy.getPhase() === GamePhase.fight) {
+      if (this.gridSystem.gameProxy.getPlayer().status === PlayerStatus.reloading) {
+        //  can't attack during reload
+        return;
+      }
       // only draw attach area if in opponent region
       if (!this.gridSystem.isOpponentRegion(gridXY)) return;
       this.ctx.fillStyle = 'rgba(255,0,0,0.5)';
       this.ctx.fillRect(actualX, actualY, this.gridSystem.gridCellWidth(), this.gridSystem.gridCellHeight());
+
+    } else if (this.gridSystem.gameProxy.getPhase() === GamePhase.game_over) {
+      return;
 
     } else {
       throw new Error('Unknown phase');
@@ -138,12 +146,17 @@ export class HoverProjection {
     if (this.gridSystem.gameProxy.getPhase() === GamePhase.place_ships) {
       const ship = getSelectedAsset();
       if (!ship) {
-        throw new Error('Ship not found for asset');
+        userMessage.errorMsg('Ship not found for asset')
+      } else {
+        this.gridSystem.gameProxy.placeShip(ship, xy.x, xy.y, this.rotation).then();
       }
-      this.gridSystem.gameProxy.placeShip(ship, xy.x, xy.y, this.rotation).then();
 
     } else if (this.gridSystem.gameProxy.getPhase() === GamePhase.fight) {
-      this.gridSystem.gameProxy.attackLocation(xy.x, xy.y).then();
+      if (this.gridSystem.gameProxy.getPlayer().status === PlayerStatus.reloading) {
+        userMessage.errorMsg('Reloading... Waiting on other player to attack.');
+      } else {
+        this.gridSystem.gameProxy.attackLocation(xy.x, xy.y).then();
+      }
     }
   }
 

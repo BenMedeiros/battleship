@@ -2,7 +2,7 @@
 
 import img_manifest from "../../assets/img/img_manifest.js";
 import {Player} from "./Player.js";
-import {PlayerStatus, GamePhase, tileStates} from "./statuses.js";
+import {PlayerStatus, GamePhase, TileStates} from "./statuses.js";
 import {createEmptyBoard} from "./playerBoards.js";
 
 let unq_id_ship = 0;
@@ -31,7 +31,7 @@ export class Game {
       width: 5,
       // ships in games and sizes
       ships: [
-        new Ship(2, 'ship_2', img_manifest.ship_2),
+        // new Ship(2, 'ship_2', img_manifest.ship_2),
         new Ship(3, 'ship_3', img_manifest.ship_3)
         // new Ship(4, 'ship_4', img_manifest.ship_4),
         // new Ship(5, 'ship_5', img_manifest.ship_5)
@@ -97,6 +97,7 @@ export class Game {
 
     player.playerShips.push({
       ship,
+      isSunk: false,
       x,
       y,
       rotationDeg,
@@ -105,6 +106,8 @@ export class Game {
 
     console.log(player);
     player.updatePlayerStatus(this);
+
+    return ship.assetKey + ' placed';
   }
 
   shipsReady(playerId) {
@@ -114,11 +117,13 @@ export class Game {
     // check if all players are ready for combat
     for (const player of this.players) {
       if (player.status !== PlayerStatus.ships_ready) {
-        return;
+        return 'Your ships are ready, waiting for other player';
       }
     }
     this.phase = GamePhase.fight;
     this.players.forEach(ply => ply.planAttack());
+
+    return 'Ships ready, start the attack!';
   }
 
   attackLocation(playerId, x, y) {
@@ -130,11 +135,45 @@ export class Game {
     const opponent = this.getOpponent(player);
     if (!opponent.isPlayerRegion(x, y)) {
       throw new Error('That is not your opponents region');
-    } else if (this.board[x][y] !== tileStates.empty) {
+    } else if (this.board[y][x] !== TileStates.empty) {
       throw new Error('Tile already attacked');
     }
-    this.board[x][y] = opponent.isHit(x, y);
-    console.log(this.board);
+    const playerShipHit = opponent.isHit(x, y);
+    this.board[y][x] = playerShipHit ? TileStates.hit : TileStates.miss;
+
+    player.reloading();
+    if (player.status === PlayerStatus.reloading && opponent.status === PlayerStatus.reloading) {
+      player.finishReload();
+      opponent.finishReload();
+      player.checkIfDead();
+      opponent.checkIfDead();
+
+      if (player.status === PlayerStatus.dead) {
+        this.phase = GamePhase.game_over;
+        if (opponent.status === PlayerStatus.dead) {
+          player.status = PlayerStatus.tie;
+          opponent.status = PlayerStatus.tie;
+          return 'Tie, both sides died.';
+        } else {
+          player.status = PlayerStatus.lose;
+          opponent.status = PlayerStatus.win;
+          return 'You Died!  Opponent wins';
+        }
+      } else {
+        if (opponent.status === PlayerStatus.dead) {
+          this.phase = GamePhase.game_over;
+          player.status = PlayerStatus.win;
+          opponent.status = PlayerStatus.lose;
+          return 'YOU WIN!  Killed the enemy!'
+        }
+      }
+    }
+
+    if (playerShipHit) {
+      return opponent.isShipSunk(playerShipHit) ? 'Hit and Sunk!' : 'Hit!';
+    } else {
+      return 'Miss...';
+    }
   }
 }
 
@@ -167,7 +206,7 @@ function buildShipSpacesXY(x0, x1, y0, y1) {
   const shipSpacesXY = [];
   for (let i = x0; i <= x1; i++) {
     for (let j = y0; j <= y1; j++) {
-      shipSpacesXY.push({x: i, y: j});
+      shipSpacesXY.push({x: i, y: j, hit: false});
     }
   }
   return shipSpacesXY;

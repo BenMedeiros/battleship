@@ -14,15 +14,22 @@ export const PlayerStatus = {
   // waiting on player to choose attach location
   planning_attack: 3,
   // player attack submitted (no step for submit)
-  attack_ready: 4
+  reloading: 4,
+  //  dead
+  dead: 5,
+  //  post game statuses
+  win: 6,
+  lose: 7,
+  tie: 8
 }
 
 export const GamePhase = {
   place_ships: 0,
-  fight: 1
+  fight: 1,
+  game_over: 2
 }
 
-export const tileStates = {
+export const TileStates = {
   empty: 0,
   hit: 1,
   miss: 2

@@ -54,6 +54,10 @@ export class GameProxy {
     return this.gameState.players.find(ply => ply.id !== this.playerId);
   }
 
+  getBoard() {
+    return this.gameState.board;
+  }
+
   setGridSystem(gridSystem) {
     this.gridSystem = gridSystem;
   }
@@ -68,7 +72,6 @@ export class GameProxy {
     // when sync, player status may change so update btns accordingly
     this.controls.shipsReady.disableIf(this.getPlayer().status !== PlayerStatus.ships_placed);
     this.controls.playerStatusEl.innerText = Object.keys(PlayerStatus)[this.getPlayer().status];
-    console.log(this.gameState);
     if (this.gameState.phase === GamePhase.fight) {
       hideSidebar();
     }
@@ -76,7 +79,8 @@ export class GameProxy {
 
   async placeShip(ship, x, y, rotationDeg) {
     try {
-      await this.gameAPI.placeShip(this.playerId, ship, x, y, rotationDeg);
+      const response = await this.gameAPI.placeShip(this.playerId, ship, x, y, rotationDeg);
+      userMessage.msg(response);
     } catch (e) {
       userMessage.errorMsg(e);
     }
@@ -88,7 +92,8 @@ export class GameProxy {
 
   async shipsReady() {
     try {
-      await this.gameAPI.shipsReady(this.playerId);
+      const response = await this.gameAPI.shipsReady(this.playerId);
+      userMessage.msg(response);
     } catch (e) {
       userMessage.errorMsg(e);
     }
@@ -98,7 +103,8 @@ export class GameProxy {
 
   async attackLocation(x, y) {
     try {
-      await this.gameAPI.attackLocation(this.playerId, x, y);
+      const response = await this.gameAPI.attackLocation(this.playerId, x, y);
+      userMessage.msg(response);
     } catch (e) {
       userMessage.errorMsg(e);
     }

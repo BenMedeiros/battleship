@@ -3,6 +3,7 @@
 import {drawGrid, drawRotated} from "../canvas/drawHelpers.js";
 import {loadServerImage} from "../canvas/fileHandler.js";
 import {HoverProjection} from "./HoverProjection.js";
+import {TileStates} from "../../server/server/statuses.js";
 
 const canvas_wrapper = document.getElementById('canvas_wrapper');
 // offset additional gridSystems by left
@@ -115,6 +116,21 @@ export class GridSystem {
         if (img) {
           drawRotated(this.ctx, img, this.getPixelX(playerShip.x), this.getPixelY(playerShip.y), playerShip.rotationDeg);
           // this.ctx.drawImage(img, this.getPixelX(playerShip.x), this.getPixelY(playerShip.y), img.width, img.height);
+        }
+      }
+    }
+    this.redrawBoardAttacks();
+  }
+
+  redrawBoardAttacks() {
+    for (const [y, row] of Object.entries(this.gameProxy.getBoard())) {
+      for (const [x, tileState] of Object.entries(row)) {
+        if (tileState === TileStates.hit) {
+          this.ctx.fillStyle = 'rgba(255,0,0,0.78)';
+          this.ctx.fillRect(this.getPixelX(x), this.getPixelY(y), this.gridCellWidth(), this.gridCellHeight());
+        } else if (tileState === TileStates.miss) {
+          this.ctx.fillStyle = 'rgba(255,255,255,0.78)';
+          this.ctx.fillRect(this.getPixelX(x), this.getPixelY(y), this.gridCellWidth(), this.gridCellHeight());
         }
       }
     }

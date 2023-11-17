@@ -1,6 +1,6 @@
 'use strict';
 
-import {PlayerStatus, tileStates} from "./statuses.js";
+import {PlayerStatus, TileStates} from "./statuses.js";
 
 let unq_id_player = 0;
 
@@ -69,14 +69,41 @@ export class Player {
     }
   }
 
+  // returns playerShip that is hit
   isHit(x, y) {
     for (const playerShip of this.playerShips) {
+      if (playerShip.isSunk) continue;
       for (const shipSpace of playerShip.shipSpacesXY) {
         if (x === shipSpace.x && y === shipSpace.y) {
-          return tileStates.hit;
+          shipSpace.hit = true;
+          this.isShipSunk(playerShip);
+          return playerShip;
         }
       }
     }
-    return tileStates.miss;
+  }
+
+  isShipSunk(playerShip) {
+    for (const shipSpace of playerShip.shipSpacesXY) {
+      if (!shipSpace.hit) return false;
+    }
+    playerShip.isSunk = true;
+    return true;
+  }
+
+  reloading() {
+    this.status = PlayerStatus.reloading;
+  }
+
+  finishReload() {
+    this.status = PlayerStatus.planning_attack;
+  }
+
+  checkIfDead() {
+    for (const playerShip of this.playerShips) {
+      console.log(playerShip.isSunk,);
+      if (!playerShip.isSunk) return;
+    }
+    this.status = PlayerStatus.dead;
   }
 }
