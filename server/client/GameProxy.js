@@ -63,7 +63,7 @@ export class GameProxy {
   }
 
   async syncGameState() {
-    const newGameState = await JSON.parse(this.gameAPI.getGameState());
+    const newGameState = await this.gameAPI.getGameState(this.playerId);
     //  would be better to not redraw everything but check for diffs
     // but for now just redrawing everything
     this.gameState = newGameState;

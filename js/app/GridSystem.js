@@ -104,21 +104,16 @@ export class GridSystem {
     return true;
   }
 
-  highlightGridLocation(x, y) {
-    this.ctx.fillStyle = 'rgba(255,0,0,0.5)';
-    this.ctx.fillRect(this.getPixelX(x), this.getPixelY(y), this.gridCellWidth(), this.gridCellHeight());
-  }
-
   redrawPlayerShips() {
-    for (const player of Object.values(this.gameProxy.getPlayers())) {
-      for (const playerShip of Object.values(player.playerShips)) {
-        const img = loadServerImage(playerShip.ship.asset.src);
-        if (img) {
-          drawRotated(this.ctx, img, this.getPixelX(playerShip.x), this.getPixelY(playerShip.y), playerShip.rotationDeg);
-          // this.ctx.drawImage(img, this.getPixelX(playerShip.x), this.getPixelY(playerShip.y), img.width, img.height);
-        }
+    const player = this.gameProxy.getPlayer();
+
+    for (const playerShip of Object.values(player.playerShips)) {
+      const img = loadServerImage(playerShip.ship.asset.src);
+      if (img) {
+        drawRotated(this.ctx, img, this.getPixelX(playerShip.x), this.getPixelY(playerShip.y), playerShip.rotationDeg);
       }
     }
+
     this.redrawBoardAttacks();
   }
 

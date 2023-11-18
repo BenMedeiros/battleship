@@ -18,12 +18,6 @@ class Ship {
 
 export class Game {
   constructor() {
-    this.turn = {
-      player: 0,
-      turn: 0,
-      turnStartTime: null
-    };
-
     this.gameConfig = {
       players: 2,
       // how many tiles on each player's side
@@ -49,9 +43,17 @@ export class Game {
   }
 
   // server response of game state, sent for every server request for sync
-  getGameState() {
+  getGameState(playerId) {
     // console.log(this);
-    return JSON.stringify(this);
+    const response = JSON.parse(JSON.stringify(this));
+    response.players.find(ply => ply.id !== playerId).playerShips.forEach(playerShip => {
+      delete playerShip.rotationDeg;
+      delete playerShip.shipSpacesXY;
+      delete playerShip.x;
+      delete playerShip.y;
+    });
+
+    return response;
   }
 
   getPlayerFromId(playerId) {

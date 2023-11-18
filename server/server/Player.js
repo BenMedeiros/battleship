@@ -1,6 +1,6 @@
 'use strict';
 
-import {PlayerStatus, TileStates} from "./statuses.js";
+import {PlayerStatus} from "./statuses.js";
 
 let unq_id_player = 0;
 

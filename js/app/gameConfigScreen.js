@@ -9,7 +9,6 @@
 import {ButtonType} from "../../html/tinyComponents/ButtonType.js";
 import {SelectInputType} from "../../html/tinyComponents/SelectInputType.js";
 import {LabelInputType} from "../../html/tinyComponents/LabelInputType.js";
-import userMessage from "../../html/components/userMessage.js";
 
 let winScreenElement = null;
 
