@@ -10,8 +10,6 @@ export class ShipSidebar {
     this.selectedEl = null;
     this.assets = ships;
     this.sidebarEl = null;
-
-    this.buildSidebarElement();
   }
 
   destroy() {
@@ -38,11 +36,11 @@ export class ShipSidebar {
     return img;
   }
 
-  buildSidebarElement() {
+  createElementIn(parentElement) {
     this.sidebarEl = document.createElement('div');
     this.sidebarEl.id = 'sidebar';
     this.sidebarEl.classList.add('sidebar');
-    this.gridSystem.gameBoardWrapperEl.appendChild(this.sidebarEl);
+    parentElement.appendChild(this.sidebarEl);
 
     for (const [i, ship] of Object.entries(this.assets)) {
       // ship images are designed for 60px grid

@@ -36,10 +36,22 @@ export class GridSystem {
   }
 
   setupCanvas() {
-    this.gameBoardWrapperEl = document.createElement('div');
-    this.gameBoardWrapperEl.classList.add('gameboard');
+    this.gameboardEl = document.createElement('div');
+    this.gameboardEl.classList.add('gameboard');
+    this.gameboardEl.style.width = this.width + (4 * this.gridCellWidth()) + 'px';
+
+    const commonWidth = this.width + (3 * this.gridCellWidth());
+    this.gameProxy.userMessage.createElementIn(this.gameboardEl, commonWidth);
+
+    this.gameboardBodyEl = document.createElement('div');
+    this.gameboardBodyEl.classList.add('gameboard-body');
+    this.gameboardBodyEl.style.width = commonWidth + 'px';
+    this.gameboardBodyEl.style.height = this.height + 'px';
+    this.gameboardEl.appendChild(this.gameboardBodyEl);
 
     this.shipSidebar = new ShipSidebar(this, this.gameProxy.getGameConfig().ships);
+    this.shipSidebar.createElementIn(this.gameboardBodyEl);
+
 
     this.canvas = document.createElement('canvas');
     this.canvas.classList.add('canvas-board');
@@ -57,8 +69,8 @@ export class GridSystem {
         this.gridCellWidth(), this.gridCellHeight());
     }
 
-    this.gameBoardWrapperEl.appendChild(this.canvas);
-    canvas_wrapper.appendChild(this.gameBoardWrapperEl);
+    this.gameboardBodyEl.appendChild(this.canvas);
+    canvas_wrapper.appendChild(this.gameboardEl);
 
     // run after adding canvas to parent
     this.hoverProjection = new HoverProjection(this);

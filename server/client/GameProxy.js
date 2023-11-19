@@ -7,7 +7,7 @@
 * */
 
 
-import userMessage from "../../html/components/userMessage.js";
+import {UserMessage} from "../../html/components/userMessage.js";
 import {ButtonType} from "../../html/tinyComponents/ButtonType.js";
 import {GamePhase, PlayerStatus} from "../server/statuses.js";
 import {GridSystem} from "../../js/app/GridSystem.js";
@@ -21,6 +21,7 @@ export class GameProxy {
     this.gameState = null;
     this.controls = null;
     this.pollIntervalId = null;
+    this.userMessage = new UserMessage();
 
     this.start().then();
   }
@@ -98,9 +99,9 @@ export class GameProxy {
   async placeShip(ship, x, y, rotationDeg) {
     try {
       const response = await this.gameAPI.placeShip(this.playerId, ship, x, y, rotationDeg);
-      userMessage.msg(response);
+      this.userMessage.message(response);
     } catch (e) {
-      userMessage.errorMsg(e);
+      this.userMessage.error(e);
     }
 
     //   pretend we got a response from the server, and technically
@@ -111,9 +112,9 @@ export class GameProxy {
   async shipsReady() {
     try {
       const response = await this.gameAPI.shipsReady(this.playerId);
-      userMessage.msg(response);
+      this.userMessage.message(response);
     } catch (e) {
-      userMessage.errorMsg(e);
+      this.userMessage.error(e);
     }
 
     await this.syncGameState();
@@ -122,9 +123,9 @@ export class GameProxy {
   async attackLocation(x, y) {
     try {
       const response = await this.gameAPI.attackLocation(this.playerId, x, y);
-      userMessage.msg(response);
+      this.userMessage.message(response);
     } catch (e) {
-      userMessage.errorMsg(e);
+      this.userMessage.error(e);
     }
 
     await this.syncGameState();

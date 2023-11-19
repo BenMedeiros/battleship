@@ -4,7 +4,6 @@
 import {getLastCursorPosition, saveCursorPosition} from "../canvas/interactions.js";
 import {drawRotated} from "../canvas/drawHelpers.js";
 import {GamePhase, PlayerStatus} from "../../server/server/statuses.js";
-import userMessage from "../../html/components/userMessage.js";
 
 export class HoverProjection {
   constructor(gridSystem) {
@@ -151,14 +150,14 @@ export class HoverProjection {
     if (this.gridSystem.gameProxy.getPhase() === GamePhase.place_ships) {
       const ship = this.gridSystem.shipSidebar.getSelectedAsset();
       if (!ship) {
-        userMessage.errorMsg('Ship not found for asset')
+        this.gridSystem.gameProxy.userMessage.error('Ship not found for asset')
       } else {
         this.gridSystem.gameProxy.placeShip(ship, xy.x, xy.y, this.rotation).then();
       }
 
     } else if (this.gridSystem.gameProxy.getPhase() === GamePhase.fight) {
       if (this.gridSystem.gameProxy.getPlayer().status === PlayerStatus.reloading) {
-        userMessage.errorMsg('Reloading... Waiting on other player to attack.');
+        this.gridSystem.gameProxy.userMessage.error('Reloading... Waiting on other player to attack.');
       } else {
         this.gridSystem.gameProxy.attackLocation(xy.x, xy.y).then();
       }

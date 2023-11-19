@@ -121,22 +121,26 @@ canvas {
 /*
 Messages and timers controls by the userMessage.js
 */
-#msg {
+.msg {
   background-color: var(--color-menu-backdrop-hover);
   color: var(--color-outline);
-  overflow-x: auto;
+  overflow-x: hidden;
   /*noinspection CssInvalidPropertyValue*/
   text-wrap: nowrap;
+  display: block;
+  width: 90%;
 }
 
-#error-msg {
+.error-msg {
   background-color: var(--color-outline);
   color: var(--color-btn-delete);
   font-weight: bold;
   font-size: 1.1rem;
+  display: block;
+  width: 90%;
 }
 
-#timer, #msg, #error-msg {
+#timer, .msg, .error-msg {
   padding-inline: 1rem;
   padding-block: .3rem;
 }
@@ -162,7 +166,7 @@ Messages and timers controls by the userMessage.js
 Game board and word box formatting for gameboard.js
  */
 .sidebar {
-  width: 150px;
+  /*width: 150px;*/
   background: #b69f9f;
   border: solid;
   filter: drop-shadow(4px 4px 14px black);
@@ -170,7 +174,7 @@ Game board and word box formatting for gameboard.js
 }
 
 .sidebar > div {
-  height: 150px;
+  /*height: 150px;*/
   border: solid green;
   margin: 20px;
   filter: drop-shadow(4px 4px 14px black);
@@ -185,25 +189,30 @@ Game board and word box formatting for gameboard.js
 
 .sidebar > div.selected {
   border: solid white;
-  scale: 125%;
+  /*scale: 125%;*/
 }
 
 .sidebar > div > h3 {
   margin: 0;
   background-color: #45a049;
-  height: 20%;
+  /*height: 20%;*/
 }
 
 .sidebar > div > img {
-  height: 80%;
-  width: 100%;
-  object-fit: scale-down;
-  background-color: #45a049;
+  /*height: 80%;*/
+  /*width: 100%;*/
+  /*object-fit: scale-down;*/
+  /*background-color: #45a049;*/
 }
 
-.gameboard {
-  width: 550px;
-  height: 600px;
+#canvas_wrapper {
+  display: flex;
+}
+
+.gameboard-body {
+  flex-shrink: 0;
+  /*width: 550px;*/
+  /*height: 600px;*/
   border: solid white 5px;
   padding: 10px;
   display: flex;
@@ -211,11 +220,17 @@ Game board and word box formatting for gameboard.js
   position: relative;
 }
 
-.gameboard > * {
+.gameboard-body > * {
   display: inline;
 }
 
-.gameboard > canvas {
+.gameboard-body > canvas {
   position: absolute;
   left: 170px;
+}
+
+.gameboard {
+  padding: 20px;
+  border: solid blue 1px;
+  filter: drop-shadow(4px 4px 4px black);
 }

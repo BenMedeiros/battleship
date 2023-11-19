@@ -18,10 +18,10 @@ export class Game {
       width: width,
       // ships in games and sizes
       ships: [
-        // new Ship(2, 'ship_2', img_manifest.ship_2),
-        new Ship(3, 'ship_3', img_manifest.ship_3)
-        // new Ship(4, 'ship_4', img_manifest.ship_4),
-        // new Ship(5, 'ship_5', img_manifest.ship_5)
+        new Ship(2, 'ship_2', img_manifest.ship_2),
+        new Ship(3, 'ship_3', img_manifest.ship_3),
+        new Ship(4, 'ship_4', img_manifest.ship_4),
+        new Ship(5, 'ship_5', img_manifest.ship_5)
       ]
     };
 
