@@ -3,7 +3,6 @@
 // keep track of where the hover is drawn so it can be quickly erased on top layer
 import {getLastCursorPosition, saveCursorPosition} from "../canvas/interactions.js";
 import {drawRotated} from "../canvas/drawHelpers.js";
-import {getSelectedAsset, getSelectedAssetImage} from "./assetPlacer.js";
 import {GamePhase, PlayerStatus} from "../../server/server/statuses.js";
 import userMessage from "../../html/components/userMessage.js";
 
@@ -31,13 +30,19 @@ export class HoverProjection {
   setupCanvas() {
     this.canvas = document.createElement('canvas');
     this.canvas.classList.add('hover-projection');
-    this.canvas.style.left = this.gridSystem.canvas.style.left;
     this.ctx = this.canvas.getContext("2d");
 
     this.canvas.height = this.gridSystem.height;
     this.canvas.width = this.gridSystem.width;
 
     this.gridSystem.canvas.parentNode.appendChild(this.canvas);
+  }
+
+  destroy() {
+    this.animating = false;
+    this.canvas.remove();
+    delete this.gridSystem;
+    delete this;
   }
 
   clearLastDraw() {
@@ -144,7 +149,7 @@ export class HoverProjection {
     // if (xy) this.highlightGridLocation(xy.x, xy.y);
 
     if (this.gridSystem.gameProxy.getPhase() === GamePhase.place_ships) {
-      const ship = getSelectedAsset();
+      const ship = this.gridSystem.shipSidebar.getSelectedAsset();
       if (!ship) {
         userMessage.errorMsg('Ship not found for asset')
       } else {
@@ -165,7 +170,7 @@ export class HoverProjection {
     if (!this.animating) return;
     window.requestAnimationFrame(this.drawOnTop.bind(this));
 
-    const img = getSelectedAssetImage();
+    const img = this.gridSystem.shipSidebar.getSelectedAssetImage();
     const pixelXY = getLastCursorPosition();
     if (pixelXY) {
       this.drawImage(img, pixelXY.x, pixelXY.y, timestamp);

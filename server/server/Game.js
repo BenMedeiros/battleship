@@ -9,7 +9,7 @@ let game_id = 0;
 
 export class Game {
   constructor(height, width, enemyAI) {
-    this.game_id = game_id++;
+    this.id = game_id++;
 
     this.gameConfig = {
       players: 2,

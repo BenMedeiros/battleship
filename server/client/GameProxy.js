@@ -10,7 +10,6 @@
 import userMessage from "../../html/components/userMessage.js";
 import {ButtonType} from "../../html/tinyComponents/ButtonType.js";
 import {GamePhase, PlayerStatus} from "../server/statuses.js";
-import {hideSidebar} from "../../js/app/assetPlacer.js";
 import {GridSystem} from "../../js/app/GridSystem.js";
 
 export class GameProxy {
@@ -28,6 +27,10 @@ export class GameProxy {
 
   destroy() {
     clearInterval(this.pollIntervalId);
+    this.controls.shipsReady.destroy();
+    this.controls.playerStatusEl.remove();
+    this.gridSystem.destroy();
+    delete this.gameAPI;
   }
 
   bindGridSystem(gridSystem) {
@@ -62,25 +65,18 @@ export class GameProxy {
     return this.gameState.board;
   }
 
-  setGridSystem(gridSystem) {
-    this.gridSystem = gridSystem;
-  }
-
-  async newGame() {
-    console.log('new game ');
-  }
-
   async start() {
     this.controls = {
-      shipsReady: createShipsReadyBtn(this.playerId, this.shipsReady.bind(this)),
+      shipsReady: new ButtonType('ships-ready', 'Ships Ready',
+        this.shipsReady.bind(this), true, null,
+        document.getElementById("controls-bar")),
       playerStatusEl: createPlayerStatusText(this.playerId)
     };
     this.pollIntervalId = setInterval(this.syncGameState.bind(this), 4000);
 
     this.syncGameState().then(async () => {
-      const gridSystem = new GridSystem(this);
-      this.setGridSystem(gridSystem);
-      gridSystem.setupCanvas();
+      this.gridSystem = new GridSystem(this);
+      this.gridSystem.setupCanvas();
     });
   }
 
@@ -95,7 +91,7 @@ export class GameProxy {
     this.controls.shipsReady.disableIf(this.getPlayer().status !== PlayerStatus.ships_placed);
     this.controls.playerStatusEl.innerText = Object.keys(PlayerStatus)[this.getPlayer().status];
     if (this.gameState.phase === GamePhase.fight) {
-      hideSidebar();
+      this.gridSystem.shipSidebar.hideSidebar();
     }
   }
 
@@ -135,12 +131,6 @@ export class GameProxy {
   }
 }
 
-
-function createShipsReadyBtn(playerId, cb) {
-  return new ButtonType('ships-ready', 'Ships Ready',
-    cb, true, null,
-    document.getElementById("controls-bar"));
-}
 
 function createPlayerStatusText(playerId) {
   const el = document.createElement('span');

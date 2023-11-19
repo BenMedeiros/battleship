@@ -107,7 +107,7 @@ table caption {
 }
 
 canvas {
-  position: absolute;
+  /*position: absolute;*/
   border: solid;
   /*width: 20rem;*/
   /*width: 50rem;*/
@@ -161,17 +161,15 @@ Messages and timers controls by the userMessage.js
 /*
 Game board and word box formatting for gameboard.js
  */
-#sidebar {
-  min-width: 100px;
-  max-width: 200px;
-  min-height: 100px;
+.sidebar {
+  width: 150px;
   background: #b69f9f;
   border: solid;
   filter: drop-shadow(4px 4px 14px black);
   overflow-y: auto;
 }
 
-#sidebar > div {
+.sidebar > div {
   height: 150px;
   border: solid green;
   margin: 20px;
@@ -180,25 +178,44 @@ Game board and word box formatting for gameboard.js
   transition: scale .3s;
 }
 
-#sidebar > div:hover {
+.sidebar > div:hover {
   scale: 125%;
   z-index: 2;
 }
 
-#sidebar > div.selected {
+.sidebar > div.selected {
   border: solid white;
   scale: 125%;
 }
 
-#sidebar > div > h3 {
+.sidebar > div > h3 {
   margin: 0;
   background-color: #45a049;
   height: 20%;
 }
 
-#sidebar > div > img {
+.sidebar > div > img {
   height: 80%;
   width: 100%;
   object-fit: scale-down;
   background-color: #45a049;
+}
+
+.gameboard {
+  width: 550px;
+  height: 600px;
+  border: solid white 5px;
+  padding: 10px;
+  display: flex;
+  /* unintuitively, this tells the children to be relative, not the element itself*/
+  position: relative;
+}
+
+.gameboard > * {
+  display: inline;
+}
+
+.gameboard > canvas {
+  position: absolute;
+  left: 170px;
 }

@@ -15,7 +15,7 @@ class LobbyPlayer {
   }
 }
 
-export class Lobby {
+class Lobby {
   constructor() {
     this.games = [];
     this.players = [];
@@ -58,4 +58,11 @@ export class Lobby {
     this.players.push(newPlayer);
     return newPlayer;
   }
+}
+
+
+let globalLobby = new Lobby();
+
+export function getGlobalLobby() {
+  return globalLobby;
 }

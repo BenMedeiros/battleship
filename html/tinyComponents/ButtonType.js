@@ -14,6 +14,10 @@ export class ButtonType {
     if (parentEl) this.createElementIn(parentEl);
   }
 
+  destroy() {
+    if (this.element) this.element.remove();
+  }
+
   createElementIn(parentEl) {
     if (this.parentsElements.indexOf(parentEl) !== -1) {
       console.error('Already exists in this element', this);

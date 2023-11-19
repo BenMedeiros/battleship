@@ -4,6 +4,7 @@ import {drawGrid, drawRotated} from "../canvas/drawHelpers.js";
 import {loadServerImage} from "../canvas/fileHandler.js";
 import {HoverProjection} from "./HoverProjection.js";
 import {TileStates} from "../../server/server/statuses.js";
+import {ShipSidebar} from "./ShipSidebar.js";
 
 const canvas_wrapper = document.getElementById('canvas_wrapper');
 // offset additional gridSystems by left
@@ -35,9 +36,13 @@ export class GridSystem {
   }
 
   setupCanvas() {
+    this.gameBoardWrapperEl = document.createElement('div');
+    this.gameBoardWrapperEl.classList.add('gameboard');
+
+    this.shipSidebar = new ShipSidebar(this, this.gameProxy.getGameConfig().ships);
+
     this.canvas = document.createElement('canvas');
     this.canvas.classList.add('canvas-board');
-    this.canvas.style.left = (gridSystemInstances++ * 1.1 * this.width) + 200 + 'px';
     this.ctx = this.canvas.getContext("2d");
 
     this.canvas.height = this.height;
@@ -52,11 +57,23 @@ export class GridSystem {
         this.gridCellWidth(), this.gridCellHeight());
     }
 
-    canvas_wrapper.appendChild(this.canvas);
+    this.gameBoardWrapperEl.appendChild(this.canvas);
+    canvas_wrapper.appendChild(this.gameBoardWrapperEl);
+
     // run after adding canvas to parent
     this.hoverProjection = new HoverProjection(this);
     this.hoverProjection.setupCanvas();
     this.hoverProjection.handleMouseEvents();
+  }
+
+  destroy() {
+    gridSystemInstances--;
+    this.hoverProjection.destroy();
+    this.canvas.remove();
+    console.log('grid removed');
+    delete this.hoverProjection;
+    delete this.gameProxy;
+    delete this;
   }
 
   getPixelX(x) {

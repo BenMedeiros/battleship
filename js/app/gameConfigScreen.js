@@ -9,9 +9,13 @@
 import {ButtonType} from "../../html/tinyComponents/ButtonType.js";
 import {SelectInputType} from "../../html/tinyComponents/SelectInputType.js";
 import {LabelInputType} from "../../html/tinyComponents/LabelInputType.js";
+import {getGlobalLobby} from "../../server/server/Lobby.js";
+import {GameProxy} from "../../server/client/GameProxy.js";
 
 let winScreenElement = null;
-let winScreenLinkedGameProxy = null;
+
+let gameProxyPlayer0 = null;
+let gameProxyPlayer1 = null;
 
 const savedConfig = {
   name: 'Tom',
@@ -23,8 +27,6 @@ const inputElements = {};
 
 // create screen to show if player won or lost
 function createWinScreen() {
-  console.log(winScreenLinkedGameProxy);
-
   if (winScreenElement) return;
 
   winScreenElement = document.createElement("div");
@@ -36,19 +38,19 @@ function createWinScreen() {
   div.style.fontSize = 'xx-large';
   winScreenElement.appendChild(div);
 
-  const isGameStarted = winScreenLinkedGameProxy.isGameStarted();
+  const isGameStarted = gameProxyPlayer0 && gameProxyPlayer0.isGameStarted();
 
   //player config
-  inputElements.idI = new LabelInputType('playerId', 'integer', 'ID',
+  inputElements.playerId = new LabelInputType('playerId', 'integer', 'ID',
     2828, null, true, winScreenElement);
 
-  inputElements.nameI = new LabelInputType('name', 'string', 'Name',
+  inputElements.name = new LabelInputType('name', 'string', 'Name',
     savedConfig.name, 'your name', isGameStarted, winScreenElement);
 
-  inputElements.nameI = new LabelInputType('height', 'integer', 'Height',
+  inputElements.height = new LabelInputType('height', 'integer', 'Height',
     savedConfig.height, 'your name', isGameStarted, winScreenElement);
 
-  inputElements.nameI = new LabelInputType('width', 'integer', 'Width',
+  inputElements.width = new LabelInputType('width', 'integer', 'Width',
     savedConfig.width, 'your name', isGameStarted, winScreenElement);
 
   inputElements.enemyAI = new SelectInputType('enemyAI', 'Enemy AI',
@@ -56,12 +58,7 @@ function createWinScreen() {
     null, isGameStarted, winScreenElement);
   inputElements.enemyAI.createElementIn(winScreenElement);
 
-  const submit = new ButtonType('new-game', 'New Game', async () => {
-    // newGame clears players so must be first
-    console.log('new game btn');
-
-    await closeWinScreen();
-  }, null, null, winScreenElement);
+  const submit = new ButtonType('new-game', 'New Game', newGame, null, null, winScreenElement);
 
   document.getElementById("main").appendChild(winScreenElement);
 
@@ -89,9 +86,24 @@ async function closeWinScreen(event) {
   document.removeEventListener('click', closeWinScreen);
 }
 
+async function newGame() {
+  if (gameProxyPlayer0) gameProxyPlayer0.destroy();
+  if (gameProxyPlayer1) gameProxyPlayer1.destroy();
+
+  const lobby = getGlobalLobby();
+  const game = lobby.createGame(lobby.players[0].id, inputElements.height.getValue(),
+    inputElements.width.getValue(), inputElements.enemyAI.getValue());
+  console.log(game);
+  lobby.joinGame(lobby.players[1].id, game.id);
+
+  gameProxyPlayer0 = new GameProxy(game, lobby.players[0]);
+  gameProxyPlayer1 = new GameProxy(game, lobby.players[1]);
+
+  await closeWinScreen();
+}
+
 
 export default {
   createWinScreen,
-  closeWinScreen,
-  bindGameProxy: (gameProxy) => winScreenLinkedGameProxy = gameProxy
+  closeWinScreen
 }
