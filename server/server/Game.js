@@ -3,26 +3,19 @@
 import img_manifest from "../../assets/img/img_manifest.js";
 import {Player} from "./Player.js";
 import {PlayerStatus, GamePhase, TileStates} from "./statuses.js";
-import {createEmptyBoard} from "./playerBoards.js";
+import {Ship, PlayerShip} from "./Ships.js";
 
-let unq_id_ship = 0;
-
-class Ship {
-  constructor(size, assetKey, asset) {
-    this.id = unq_id_ship++;
-    this.size = size;
-    this.assetKey = assetKey;
-    this.asset = asset;
-  }
-}
+let game_id = 0;
 
 export class Game {
-  constructor() {
+  constructor(height, width, enemyAI) {
+    this.game_id = game_id++;
+
     this.gameConfig = {
       players: 2,
       // how many tiles on each player's side
-      height: 9,
-      width: 5,
+      height: height,
+      width: width,
       // ships in games and sizes
       ships: [
         // new Ship(2, 'ship_2', img_manifest.ship_2),
@@ -33,13 +26,38 @@ export class Game {
     };
 
     // playerId and info
-    this.players = [
-      new Player(this, 'Ben', 'yellow', 'top'),
-      new Player(this, 'Tom', 'blue', 'bottom')
-    ];
+    this.players = [];
 
-    this.phase = GamePhase.place_ships;
+    this.phase = GamePhase.waiting_for_players;
     this.board = createEmptyBoard(this.gameConfig.height, this.gameConfig.width);
+  }
+
+  canJoin(lobbyPlayer) {
+    // can't join if already 2 players
+    if (this.players.length >= 2) return false;
+
+    for (const player of this.players) {
+      // check if already in game
+      if (player.id === lobbyPlayer.id) return false;
+    }
+    return true;
+  }
+
+  addPlayer(lobbyPlayer) {
+    if (this.players.length === 0) {
+      const player = new Player(this, lobbyPlayer, 'red', 'top');
+      this.players.push(player);
+      return player.id;
+
+    } else if (this.players.length === 1) {
+      const player = new Player(this, lobbyPlayer, 'blue', 'bottom');
+      this.players.push(player);
+      this.phase = GamePhase.place_ships;
+      return player.id;
+
+    } else {
+      throw new Error('Two players already in game');
+    }
   }
 
   // server response of game state, sent for every server request for sync
@@ -70,45 +88,12 @@ export class Game {
 
     if (this.phase !== GamePhase.place_ships) {
       throw new Error('Cant place ships during this phase');
-    }
-    if (player.playerShips.find(el => el.ship.id === ship.id)) {
+    } else if (player.playerShips.find(el => el.ship.id === ship.id)) {
       throw new Error('Ship ' + ship.id + ' already placed');
     }
 
-    // get 0-359deg range
-    rotationDeg = ((rotationDeg % 360) + 360) % 360;
-
-    // {x, y} combinations of where the ship is located
-    const shipSpacesXY = buildShipSpaces(ship, x, y, rotationDeg);
-
-    for (const {x, y} of Object.values(shipSpacesXY)) {
-      if (x < 0 || x >= this.gameConfig.width) {
-        throw new Error('Out of bounds on X ' + x + ',' + y);
-      } else if (y < 0 || y >= this.gameConfig.height) {
-        throw new Error('Out of bounds on Y ' + x + ',' + y);
-      }
-      // check if space in player region
-      if (x < player.region.x0 || x > player.region.x1) {
-        throw new Error('Outside player region X');
-      } else if (y < player.region.y0 || y > player.region.y1) {
-        throw new Error('Outside player region Y');
-      }
-
-      checkIfShipSpaceOccupied(player.playerShips, x, y);
-    }
-
-    player.playerShips.push({
-      ship,
-      isSunk: false,
-      x,
-      y,
-      rotationDeg,
-      shipSpacesXY
-    });
-
-    console.log(player);
+    player.playerShips.push(new PlayerShip(this.gameConfig, player, ship, x, y, rotationDeg));
     player.updatePlayerStatus(this);
-
     return ship.assetKey + ' placed';
   }
 
@@ -179,37 +164,10 @@ export class Game {
   }
 }
 
-// validate if player already has overlap with ships
-function checkIfShipSpaceOccupied(playerShips, x, y) {
-  for (const playerShip of Object.values(playerShips)) {
-    for (const existingSpaceXY of Object.values(playerShip.shipSpacesXY)) {
-      if (x === existingSpaceXY.x && y === existingSpaceXY.y) {
-        throw new Error(`Space ${x},${y}, already occupied by ship ${playerShip.ship.id}`);
-      }
-    }
+function createEmptyBoard(height, width) {
+  const board = [];
+  for (let i = 0; i < height; i++) {
+    board.push(new Array(width).fill(TileStates.empty));
   }
-}
-
-// place a ship for player in x/y/deg
-function buildShipSpaces(ship, x, y, rotationDeg) {
-  if (rotationDeg === 0) {
-    return buildShipSpacesXY(x, x, y, y + ship.size - 1);
-  } else if (rotationDeg === 90) {
-    return buildShipSpacesXY(x - ship.size + 1, x, y, y);
-  } else if (rotationDeg === 180) {
-    return buildShipSpacesXY(x, x, y - ship.size + 1, y);
-  } else if (rotationDeg === 270) {
-    return buildShipSpacesXY(x, x + ship.size - 1, y, y);
-  }
-}
-
-// create {x,y} array of spots the ship occupies
-function buildShipSpacesXY(x0, x1, y0, y1) {
-  const shipSpacesXY = [];
-  for (let i = x0; i <= x1; i++) {
-    for (let j = y0; j <= y1; j++) {
-      shipSpacesXY.push({x: i, y: j, hit: false});
-    }
-  }
-  return shipSpacesXY;
+  return board;
 }

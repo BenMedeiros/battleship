@@ -1,109 +1,109 @@
 :root {
-    --color-menu-backdrop: #2f3032;
-    --color-menu-backdrop-hover: #6e6f74;
-    --color-menu-border: lightgrey;
-    --color-menu-subtext: #888888;
-    --color-menu-btn-background: #4CAF50;
-    --color-menu-btn-text: lightgrey;
-    --color-menu-btn-hover: #6e6f74;
+  --color-menu-backdrop: #2f3032;
+  --color-menu-backdrop-hover: #6e6f74;
+  --color-menu-border: lightgrey;
+  --color-menu-subtext: #888888;
+  --color-menu-btn-background: #4CAF50;
+  --color-menu-btn-text: lightgrey;
+  --color-menu-btn-hover: #6e6f74;
 
-    --color-outline: #D9D3BF;
-    --color-backdrop: rgba(139, 181, 74, 1);
-    --color-backdrop-hover: #45a049;
-    --color-backdrop-disabled: rgba(139, 181, 74, 0.5);
-    --color-text: white;
+  --color-outline: #D9D3BF;
+  --color-backdrop: rgba(139, 181, 74, 1);
+  --color-backdrop-hover: #45a049;
+  --color-backdrop-disabled: rgba(139, 181, 74, 0.5);
+  --color-text: white;
 
-    --color-card-background: #77746c;
-    --color-white: white;
-    --color-scrollbar: #5b6367;
-    --color-scrollbar-hover: #555;
+  --color-card-background: #77746c;
+  --color-white: white;
+  --color-scrollbar: #5b6367;
+  --color-scrollbar-hover: #555;
 
-    --color-btn: var(--color-backdrop);
-    --color-btn-hover: #45a049;
-    --color-btn-border: 1px solid #ccc;
-    --color-btn-disabled: #545759;
-    --color-btn-delete: #d02f2f;
-    --color-btn-delete-hover: #d11616;
+  --color-btn: var(--color-backdrop);
+  --color-btn-hover: #45a049;
+  --color-btn-border: 1px solid #ccc;
+  --color-btn-disabled: #545759;
+  --color-btn-delete: #d02f2f;
+  --color-btn-delete-hover: #d11616;
 
-    /* change the size of word boxes and font*/
-    --zoom-size: 10;
+  /* change the size of word boxes and font*/
+  --zoom-size: 10;
 }
 
 body {
-    background-size: 50%;
-    background-color: darkgrey;
-    /*background-image: url(/game-numbers/img/pokemon/backgrounds/background_line_art_1.jpg);*/
-    background-blend-mode: multiply;
+  background-size: 50%;
+  background-color: darkgrey;
+  /*background-image: url(/game-numbers/img/pokemon/backgrounds/background_line_art_1.jpg);*/
+  background-blend-mode: multiply;
 }
 
 main {
-    text-align: -webkit-center;
+  text-align: -webkit-center;
 }
 
 i {
-    vertical-align: bottom;
+  vertical-align: bottom;
 }
 
 table {
-    display: block;
-    overflow-x: scroll;
-    width: 100%;
+  display: block;
+  overflow-x: scroll;
+  width: 100%;
 }
 
 th, td {
-    border: 1px solid var(--color-menu-border);
-    border-collapse: collapse;
-    padding: .3rem;
-    width: auto;
+  border: 1px solid var(--color-menu-border);
+  border-collapse: collapse;
+  padding: .3rem;
+  width: auto;
 }
 
 td > input {
-    width: 95%; /*causes issues with using th.width*/
-    background-color: var(--color-menu-border);
+  width: 95%; /*causes issues with using th.width*/
+  background-color: var(--color-menu-border);
 }
 
 td > input.modified {
-    background-color: var(--color-backdrop);
+  background-color: var(--color-backdrop);
 }
 
 table caption {
-    text-align: left;
-    caption-side: top;
-    color: var(--color-menu-border);
-    font-size: 1.17em;
-    font-weight: bold;
+  text-align: left;
+  caption-side: top;
+  color: var(--color-menu-border);
+  font-size: 1.17em;
+  font-weight: bold;
 }
 
 #autocomplete {
-    background-color: var(--color-menu-backdrop);
-    color: var(--color-menu-border);
-    position: absolute;
-    z-index: 99;
-    list-style: none;
-    width: auto;
-    min-width: 15%;
-    max-width: 30%;
-    padding: 0;
-    margin: 0;
-    overflow-y: auto;
-    max-height: 30%;
+  background-color: var(--color-menu-backdrop);
+  color: var(--color-menu-border);
+  position: absolute;
+  z-index: 99;
+  list-style: none;
+  width: auto;
+  min-width: 15%;
+  max-width: 30%;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  max-height: 30%;
 }
 
 #autocomplete > li {
-    padding: 1rem;
+  padding: 1rem;
 }
 
 #autocomplete > li:hover:not(:disabled) {
-    background-color: var(--color-menu-btn-hover);
+  background-color: var(--color-menu-btn-hover);
 }
 
 #autocomplete > li.matched {
-    font-size: large;
+  font-size: large;
 }
 
 #autocomplete:has(li.matched) > li:not(.matched) {
-    visibility: hidden;
-    display: none;
+  visibility: hidden;
+  display: none;
 }
 
 canvas {
@@ -113,44 +113,49 @@ canvas {
   /*width: 50rem;*/
 }
 
+* {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
 /*
 Messages and timers controls by the userMessage.js
 */
 #msg {
-    background-color: var(--color-menu-backdrop-hover);
-    color: var(--color-outline);
-    overflow-x: auto;
-    /*noinspection CssInvalidPropertyValue*/
-    text-wrap: nowrap;
+  background-color: var(--color-menu-backdrop-hover);
+  color: var(--color-outline);
+  overflow-x: auto;
+  /*noinspection CssInvalidPropertyValue*/
+  text-wrap: nowrap;
 }
 
 #error-msg {
-    background-color: var(--color-outline);
-    color: var(--color-btn-delete);
-    font-weight: bold;
-    font-size: 1.1rem;
+  background-color: var(--color-outline);
+  color: var(--color-btn-delete);
+  font-weight: bold;
+  font-size: 1.1rem;
 }
 
 #timer, #msg, #error-msg {
-    padding-inline: 1rem;
-    padding-block: .3rem;
+  padding-inline: 1rem;
+  padding-block: .3rem;
 }
 
 #team-msg-wrapper {
-    display: flex;
-    max-width: 60rem;
-    border: solid;
-    align-items: center;
-    justify-content: space-evenly;
-    font-size: 1.4rem;
+  display: flex;
+  max-width: 60rem;
+  border: solid;
+  align-items: center;
+  justify-content: space-evenly;
+  font-size: 1.4rem;
 }
 
 #team-turn-color {
-    border-radius: 50%;
-    background-color: blue;
-    width: 1.2rem;
-    height: 1.2rem;
-    border: solid white;
+  border-radius: 50%;
+  background-color: blue;
+  width: 1.2rem;
+  height: 1.2rem;
+  border: solid white;
 }
 
 /*

@@ -24,9 +24,10 @@ export const PlayerStatus = {
 }
 
 export const GamePhase = {
-  place_ships: 0,
-  fight: 1,
-  game_over: 2
+  waiting_for_players: 0,
+  place_ships: 1,
+  fight: 2,
+  game_over: 3
 }
 
 export const TileStates = {

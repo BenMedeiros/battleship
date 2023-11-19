@@ -7,31 +7,29 @@ import {GridSystem} from "./app/GridSystem.js";
 import {populateSidebar} from "./app/assetPlacer.js";
 import {Game} from "../server/server/Game.js";
 import {GameProxy} from "../server/client/GameProxy.js";
+import {Lobby} from "../server/server/Lobby.js";
 
 
 const gameConfigI = new ButtonType('game-config', 'Game Config',
   gameConfigScreen.createWinScreen, false, null,
   document.getElementById("navigation-bar"));
 
-function setupGridSystemAndSync(gameProxy) {
-  gameProxy.syncGameState().then(async () => {
-    const gridSystem = new GridSystem(gameProxy);
-    gameProxy.setGridSystem(gridSystem);
-    gridSystem.setupCanvas();
-  });
-}
+
+const lobby = new Lobby();
+const player1 = lobby.newPlayer('tom');
+const player2 = lobby.newPlayer('ben');
+
+console.log(lobby);
+
+const game = lobby.createGame(player1.id, 9, 5, 'strong');
+lobby.joinGame(player2.id, lobby.getOpenGame(player2.id).id);
 
 
-const game = new Game();
-console.log(game);
+const gameProxyPlayer0 = new GameProxy(game, player1);
+const gameProxyPlayer1 = new GameProxy(game, player2);
 
-
-const gameProxyPlayer0 = new GameProxy(game, game.players[0]);
-const gameProxyPlayer1 = new GameProxy(game, game.players[1]);
 let currentPlayerGameProxy = gameProxyPlayer0;
-
-setupGridSystemAndSync(gameProxyPlayer0);
-setupGridSystemAndSync(gameProxyPlayer1);
+gameConfigScreen.bindGameProxy(currentPlayerGameProxy);
 
 setTimeout(() => {
   populateSidebar(currentPlayerGameProxy.getGameConfig().ships);

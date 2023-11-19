@@ -142,6 +142,7 @@ export class LabelInputType {
       this.element.classList.toggle('modified', this.isModified);
 
       if (this.isModified) {
+        console.log('on mod', this.getValue());
         this.onModifiedCallbacks.forEach(cb => cb());
       } else {
         this.onUnModifiedCallbacks.forEach(cb => cb());

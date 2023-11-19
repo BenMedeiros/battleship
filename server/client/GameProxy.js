@@ -11,19 +11,19 @@ import userMessage from "../../html/components/userMessage.js";
 import {ButtonType} from "../../html/tinyComponents/ButtonType.js";
 import {GamePhase, PlayerStatus} from "../server/statuses.js";
 import {hideSidebar} from "../../js/app/assetPlacer.js";
+import {GridSystem} from "../../js/app/GridSystem.js";
 
 export class GameProxy {
-  constructor(game, player) {
+  constructor(gameAPI, lobbyPlayer) {
     this.isLocalServer = true;
-    this.gameAPI = game;
-    this.playerId = player.id;
+    this.gameAPI = gameAPI;
+    this.lobbyPlayer = lobbyPlayer;
+    this.playerId = lobbyPlayer.id;
     this.gameState = null;
-    this.controls = {
-      shipsReady: createShipsReadyBtn(player.id, this.shipsReady.bind(this)),
-      playerStatusEl: createPlayerStatusText(player)
-    };
+    this.controls = null;
+    this.pollIntervalId = null;
 
-    this.pollIntervalId = setInterval(this.syncGameState.bind(this), 4000);
+    this.start().then();
   }
 
   destroy() {
@@ -46,6 +46,10 @@ export class GameProxy {
     return this.gameState.phase;
   }
 
+  isGameStarted() {
+    return [GamePhase.game_over, GamePhase.waiting_for_players].indexOf(this.gameState.phase) === -1;
+  }
+
   getPlayer() {
     return this.gameState.players.find(ply => ply.id === this.playerId);
   }
@@ -60,6 +64,24 @@ export class GameProxy {
 
   setGridSystem(gridSystem) {
     this.gridSystem = gridSystem;
+  }
+
+  async newGame() {
+    console.log('new game ');
+  }
+
+  async start() {
+    this.controls = {
+      shipsReady: createShipsReadyBtn(this.playerId, this.shipsReady.bind(this)),
+      playerStatusEl: createPlayerStatusText(this.playerId)
+    };
+    this.pollIntervalId = setInterval(this.syncGameState.bind(this), 4000);
+
+    this.syncGameState().then(async () => {
+      const gridSystem = new GridSystem(this);
+      this.setGridSystem(gridSystem);
+      gridSystem.setupCanvas();
+    });
   }
 
   async syncGameState() {
@@ -120,9 +142,9 @@ function createShipsReadyBtn(playerId, cb) {
     document.getElementById("controls-bar"));
 }
 
-function createPlayerStatusText(player) {
+function createPlayerStatusText(playerId) {
   const el = document.createElement('span');
-  el.id = 'player-status-' + player.id;
+  el.id = 'player-status-' + playerId;
   const parentEl = document.getElementById('team-msg-wrapper');
   parentEl.appendChild(el);
   return el;

@@ -60,6 +60,10 @@ export class SelectInputType {
     }
   }
 
+  destroy() {
+    if (this.element) this.element.remove();
+  }
+
   setValuesMap(valuesMap) {
     if (!valuesMap) valuesMap = {};
     // deleting these first to ensure they are gone

@@ -5,9 +5,9 @@ import {PlayerStatus} from "./statuses.js";
 let unq_id_player = 0;
 
 export class Player {
-  constructor(game, name, color, region) {
-    this.id = unq_id_player++;
-    this.name = name;
+  constructor(game, lobbyPlayer, color, region) {
+    this.id = lobbyPlayer.id;
+    this.name = lobbyPlayer.name;
     this.color = color;
     this.status = PlayerStatus.placing_ships;
 
