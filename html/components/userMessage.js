@@ -54,6 +54,7 @@ export class UserMessage {
     this.errorMsgEl = document.createElement('div');
     this.errorMsgEl.classList.add('error-msg');
     this.errorMsgEl.style.width = width + 'px';
+    this.errorMsgEl.style.display = null;
 
     parentElement.appendChild(this.msgEl);
     parentElement.appendChild(this.errorMsgEl);

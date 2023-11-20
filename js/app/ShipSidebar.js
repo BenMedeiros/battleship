@@ -37,10 +37,17 @@ export class ShipSidebar {
   }
 
   createElementIn(parentElement) {
+    const sidebarWrapperEl = document.createElement('div');
+    sidebarWrapperEl.classList.add('sidebar-wrapper');
+
+    this.gridSystem.gameProxy.controls.playerStatus.createElementIn(sidebarWrapperEl);
+    this.gridSystem.gameProxy.controls.shipsReady.createElementIn(sidebarWrapperEl);
+    parentElement.appendChild(sidebarWrapperEl);
+
     this.sidebarEl = document.createElement('div');
     this.sidebarEl.id = 'sidebar';
     this.sidebarEl.classList.add('sidebar');
-    parentElement.appendChild(this.sidebarEl);
+    sidebarWrapperEl.appendChild(this.sidebarEl);
 
     for (const [i, ship] of Object.entries(this.assets)) {
       // ship images are designed for 60px grid

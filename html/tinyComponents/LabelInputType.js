@@ -178,6 +178,11 @@ export class LabelInputType {
   }
 
   setValue(value) {
+    if (!this.element) {
+      // element not created yet so just update initial
+      this.initialValue = value;
+      return;
+    }
     if (this.type === 'checkbox') {
       this.element.checked = value;
     } else if (this.type === 'date') {

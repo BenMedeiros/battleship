@@ -140,31 +140,32 @@ Messages and timers controls by the userMessage.js
   width: 90%;
 }
 
-#timer, .msg, .error-msg {
+.msg, .error-msg {
   padding-inline: 1rem;
   padding-block: .3rem;
-}
-
-#team-msg-wrapper {
-  display: flex;
-  max-width: 60rem;
-  border: solid;
-  align-items: center;
-  justify-content: space-evenly;
-  font-size: 1.4rem;
-}
-
-#team-turn-color {
-  border-radius: 50%;
-  background-color: blue;
-  width: 1.2rem;
-  height: 1.2rem;
-  border: solid white;
 }
 
 /*
 Game board and word box formatting for gameboard.js
  */
+.sidebar-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 150px;
+  background-color: darkgrey;
+
+}
+
+.sidebar-wrapper > * {
+  margin-block: 5px;
+}
+
+.sidebar-wrapper > input {
+  background: inherit;
+  border: none;
+  text-align: center;
+}
+
 .sidebar {
   /*width: 150px;*/
   background: #b69f9f;
@@ -218,10 +219,6 @@ Game board and word box formatting for gameboard.js
   display: flex;
   /* unintuitively, this tells the children to be relative, not the element itself*/
   position: relative;
-}
-
-.gameboard-body > * {
-  display: inline;
 }
 
 .gameboard-body > canvas {

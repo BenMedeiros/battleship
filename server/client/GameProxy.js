@@ -11,6 +11,7 @@ import {UserMessage} from "../../html/components/userMessage.js";
 import {ButtonType} from "../../html/tinyComponents/ButtonType.js";
 import {GamePhase, PlayerStatus} from "../server/statuses.js";
 import {GridSystem} from "../../js/app/GridSystem.js";
+import {LabelInputType} from "../../html/tinyComponents/LabelInputType.js";
 
 export class GameProxy {
   constructor(gameAPI, lobbyPlayer) {
@@ -29,7 +30,7 @@ export class GameProxy {
   destroy() {
     clearInterval(this.pollIntervalId);
     this.controls.shipsReady.destroy();
-    this.controls.playerStatusEl.remove();
+    this.controls.playerStatus.destroy();
     this.gridSystem.destroy();
     delete this.gameAPI;
   }
@@ -69,9 +70,9 @@ export class GameProxy {
   async start() {
     this.controls = {
       shipsReady: new ButtonType('ships-ready', 'Ships Ready',
-        this.shipsReady.bind(this), true, null,
-        document.getElementById("controls-bar")),
-      playerStatusEl: createPlayerStatusText(this.playerId)
+        this.shipsReady.bind(this), true, null),
+      playerStatus: new LabelInputType('player-status', 'string',
+        null, null, '(player_status)', true)
     };
     this.pollIntervalId = setInterval(this.syncGameState.bind(this), 4000);
 
@@ -90,7 +91,7 @@ export class GameProxy {
 
     // when sync, player status may change so update btns accordingly
     this.controls.shipsReady.disableIf(this.getPlayer().status !== PlayerStatus.ships_placed);
-    this.controls.playerStatusEl.innerText = Object.keys(PlayerStatus)[this.getPlayer().status];
+    this.controls.playerStatus.setValue(Object.keys(PlayerStatus)[this.getPlayer().status]);
     if (this.gameState.phase === GamePhase.fight) {
       this.gridSystem.shipSidebar.hideSidebar();
     }
@@ -130,13 +131,4 @@ export class GameProxy {
 
     await this.syncGameState();
   }
-}
-
-
-function createPlayerStatusText(playerId) {
-  const el = document.createElement('span');
-  el.id = 'player-status-' + playerId;
-  const parentEl = document.getElementById('team-msg-wrapper');
-  parentEl.appendChild(el);
-  return el;
 }
