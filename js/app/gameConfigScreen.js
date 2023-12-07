@@ -97,7 +97,9 @@ async function newGame() {
   lobby.joinGame(lobby.players[1].id, game.id);
 
   gameProxyPlayer0 = new GameProxy(game, lobby.players[0]);
+  gameProxyPlayer0.bindAI();
   gameProxyPlayer1 = new GameProxy(game, lobby.players[1]);
+  gameProxyPlayer1.bindAI();
 
   await closeWinScreen();
 }

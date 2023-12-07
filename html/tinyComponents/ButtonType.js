@@ -69,14 +69,14 @@ export class ButtonType {
   disable() {
     if (!this.disabled) {
       this.disabled = true;
-      this.element.disabled = true;
+      if (this.element) this.element.disabled = true;
     }
   }
 
   enable() {
     if (this.disabled) {
       this.disabled = false;
-      this.element.disabled = false;
+      if (this.element) this.element.disabled = false;
     }
   }
 

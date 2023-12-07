@@ -12,6 +12,7 @@ import {ButtonType} from "../../html/tinyComponents/ButtonType.js";
 import {GamePhase, PlayerStatus} from "../server/statuses.js";
 import {GridSystem} from "../../js/app/GridSystem.js";
 import {LabelInputType} from "../../html/tinyComponents/LabelInputType.js";
+import {AiBasic} from "./AiBasic.js";
 
 export class GameProxy {
   constructor(gameAPI, lobbyPlayer) {
@@ -37,6 +38,11 @@ export class GameProxy {
 
   bindGridSystem(gridSystem) {
     this.gridSystem = gridSystem;
+  }
+
+  bindAI() {
+    if (this.ai) throw new Error('GameProxy already has an AI.');
+    this.ai = new AiBasic(this);
   }
 
   getGameConfig() {
@@ -72,7 +78,9 @@ export class GameProxy {
       shipsReady: new ButtonType('ships-ready', 'Ships Ready',
         this.shipsReady.bind(this), true, null),
       playerStatus: new LabelInputType('player-status', 'string',
-        null, null, '(player_status)', true)
+        null, null, '(player_status)', true),
+      aiMove: new ButtonType('ai-move', 'AI Move',
+        () => this.ai.doPlannedMove(), true, null),
     };
     this.pollIntervalId = setInterval(this.syncGameState.bind(this), 4000);
 
@@ -88,6 +96,14 @@ export class GameProxy {
     // but for now just redrawing everything
     this.gameState = newGameState;
     if (this.gridSystem) this.gridSystem.redrawPlayerShips();
+    // disable the ai move until ai script finds next move
+
+    if (this.ai) {
+      this.controls.aiMove.disable();
+      this.ai.planMove().then(() => {
+        this.controls.aiMove.enable();
+      });
+    }
 
     // when sync, player status may change so update btns accordingly
     this.controls.shipsReady.disableIf(this.getPlayer().status !== PlayerStatus.ships_placed);

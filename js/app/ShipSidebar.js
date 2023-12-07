@@ -42,6 +42,8 @@ export class ShipSidebar {
 
     this.gridSystem.gameProxy.controls.playerStatus.createElementIn(sidebarWrapperEl);
     this.gridSystem.gameProxy.controls.shipsReady.createElementIn(sidebarWrapperEl);
+    this.gridSystem.gameProxy.controls.aiMove.createElementIn(sidebarWrapperEl);
+
     parentElement.appendChild(sidebarWrapperEl);
 
     this.sidebarEl = document.createElement('div');
