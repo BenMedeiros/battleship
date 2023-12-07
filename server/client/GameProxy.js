@@ -80,7 +80,7 @@ export class GameProxy {
       playerStatus: new LabelInputType('player-status', 'string',
         null, null, '(player_status)', true),
       aiMove: new ButtonType('ai-move', 'AI Move',
-        () => this.ai.doPlannedMove(), true, null),
+        () => this.ai.performMove(), false, null),
     };
     this.pollIntervalId = setInterval(this.syncGameState.bind(this), 4000);
 
@@ -96,14 +96,6 @@ export class GameProxy {
     // but for now just redrawing everything
     this.gameState = newGameState;
     if (this.gridSystem) this.gridSystem.redrawPlayerShips();
-    // disable the ai move until ai script finds next move
-
-    if (this.ai) {
-      this.controls.aiMove.disable();
-      this.ai.planMove().then(() => {
-        this.controls.aiMove.enable();
-      });
-    }
 
     // when sync, player status may change so update btns accordingly
     this.controls.shipsReady.disableIf(this.getPlayer().status !== PlayerStatus.ships_placed);

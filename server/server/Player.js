@@ -101,7 +101,6 @@ export class Player {
 
   checkIfDead() {
     for (const playerShip of this.playerShips) {
-      console.log(playerShip.isSunk,);
       if (!playerShip.isSunk) return;
     }
     this.status = PlayerStatus.dead;
