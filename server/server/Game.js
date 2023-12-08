@@ -27,6 +27,7 @@ export class Game {
 
     // playerId and info
     this.players = [];
+    this.gameStateSubsCbs = {};
 
     this.phase = GamePhase.waiting_for_players;
     this.board = createEmptyBoard(this.gameConfig.height, this.gameConfig.width);
@@ -64,6 +65,8 @@ export class Game {
   getGameState(playerId) {
     // console.log(this);
     const response = JSON.parse(JSON.stringify(this));
+    playerId = Number(playerId);
+
     response.players.find(ply => ply.id !== playerId).playerShips.forEach(playerShip => {
       delete playerShip.rotationDeg;
       delete playerShip.shipSpacesXY;
@@ -72,6 +75,19 @@ export class Game {
     });
 
     return response;
+  }
+
+  // links a gameProxy to this Game so that it will receive updates
+  subscribeToGameState(playerId, cb) {
+    console.log('subbed ', playerId);
+    this.gameStateSubsCbs[playerId] = cb;
+  }
+
+  async pushGameStateToSubs() {
+    for (const [playerId, cb] of Object.entries(this.gameStateSubsCbs)) {
+      console.log('pushing state to player ', playerId);
+      cb(this.getGameState(playerId));
+    }
   }
 
   getPlayerFromId(playerId) {
@@ -84,6 +100,8 @@ export class Game {
 
   // place player ship at location
   placeShip(playerId, ship, x, y, rotationDeg) {
+    setTimeout(() => this.pushGameStateToSubs(), 10);
+
     const player = this.getPlayerFromId(playerId);
 
     if (this.phase !== GamePhase.place_ships) {
@@ -94,10 +112,13 @@ export class Game {
 
     player.playerShips.push(new PlayerShip(this.gameConfig, player, ship, x, y, rotationDeg));
     player.updatePlayerStatus(this);
+
     return ship.assetKey + ' placed';
   }
 
   shipsReady(playerId) {
+    setTimeout(() => this.pushGameStateToSubs(), 10);
+
     const player = this.getPlayerFromId(playerId);
     player.shipsReady();
 
@@ -114,6 +135,8 @@ export class Game {
   }
 
   attackLocation(playerId, x, y) {
+    setTimeout(() => this.pushGameStateToSubs(), 10);
+
     const player = this.getPlayerFromId(playerId);
     if (player.status !== PlayerStatus.planning_attack) {
       throw new Error('Not your attack planning phase');

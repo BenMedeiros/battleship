@@ -87,7 +87,12 @@ export class GameProxy {
       aiMove: new ButtonType('ai-move', 'AI Move',
         () => this.ai.performMove(), false, null),
     };
-    this.pollIntervalId = setInterval(this.syncGameState.bind(this), 4000);
+
+    // polling for when two-way comm isn't allowed
+    // this.pollIntervalId = setInterval(this.syncGameState.bind(this), 4000);
+
+    // webhook callbacks
+    this.gameAPI.subscribeToGameState(this.playerId, (newGameState) => this.consumeGameState(newGameState));
 
     this.syncGameState().then(async () => {
       this.gridSystem = new GridSystem(this);
@@ -97,6 +102,12 @@ export class GameProxy {
 
   async syncGameState() {
     const newGameState = await this.gameAPI.getGameState(this.playerId);
+    this.consumeGameState(newGameState);
+  }
+
+  // endpoint for gameState to be pushed from server
+  consumeGameState(newGameState) {
+    console.log(newGameState);
     //  would be better to not redraw everything but check for diffs
     // but for now just redrawing everything
     this.gameState = newGameState;
