@@ -172,6 +172,7 @@ Game board and word box formatting for gameboard.js
   border: solid;
   filter: drop-shadow(4px 4px 14px black);
   overflow-y: auto;
+  height: 100%;
 }
 
 .sidebar > div {
@@ -191,6 +192,10 @@ Game board and word box formatting for gameboard.js
 .sidebar > div.selected {
   border: solid white;
   /*scale: 125%;*/
+}
+
+.sidebar > div.placed {
+  display: none;
 }
 
 .sidebar > div > h3 {

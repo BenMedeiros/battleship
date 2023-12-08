@@ -73,6 +73,11 @@ export class GameProxy {
     return this.gameState.board;
   }
 
+  isPlayerShipPlaced(shipId) {
+    shipId = Number(shipId);
+    return this.getPlayer().playerShips.findIndex(ps => ps.ship.id === shipId) !== -1;
+  }
+
   async start() {
     this.controls = {
       shipsReady: new ButtonType('ships-ready', 'Ships Ready',
@@ -100,8 +105,11 @@ export class GameProxy {
     // when sync, player status may change so update btns accordingly
     this.controls.shipsReady.disableIf(this.getPlayer().status !== PlayerStatus.ships_placed);
     this.controls.playerStatus.setValue(Object.keys(PlayerStatus)[this.getPlayer().status]);
+    // update side bar state
     if (this.gameState.phase === GamePhase.fight) {
       this.gridSystem.shipSidebar.hideSidebar();
+    } else if (this.gridSystem) {
+      this.gridSystem.shipSidebar.updateAssetsPlacedStates();
     }
   }
 
@@ -109,7 +117,9 @@ export class GameProxy {
     try {
       const response = await this.gameAPI.placeShip(this.playerId, ship, x, y, rotationDeg);
       this.userMessage.message(response);
+      this.gridSystem.shipSidebar.clearSelected();
     } catch (e) {
+      console.error(e);
       this.userMessage.error(e);
     }
 
