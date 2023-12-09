@@ -84,6 +84,8 @@ export class UserMessage {
   }
 
   rewriteMessages() {
+    if (!this.msgEl) return;
+
     let str = '';
     let i = this.messageHistory.length - 1;
     while (true) {

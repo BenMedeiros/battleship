@@ -15,7 +15,7 @@ import {GameProxy} from "../../server/client/GameProxy.js";
 let winScreenElement = null;
 
 let gameProxyPlayer0 = null;
-let gameProxyPlayer1 = null;
+let gameProxyAi = null;
 
 const savedConfig = {
   name: 'Tom',
@@ -88,18 +88,22 @@ async function closeWinScreen(event) {
 
 async function newGame() {
   if (gameProxyPlayer0) gameProxyPlayer0.destroy();
-  if (gameProxyPlayer1) gameProxyPlayer1.destroy();
+  if (gameProxyAi) gameProxyAi.destroy();
 
   const lobby = getGlobalLobby();
-  const game = lobby.createGame(lobby.players[0].id, inputElements.height.getValue(),
-    inputElements.width.getValue(), inputElements.enemyAI.getValue());
-  console.log(game);
-  lobby.joinGame(lobby.players[1].id, game.id);
+  const mainPlayer = lobby.players[0];
 
-  gameProxyPlayer0 = new GameProxy(game, lobby.players[0]);
+  const game = lobby.createGame(mainPlayer.id, inputElements.height.getValue(),
+      inputElements.width.getValue(), inputElements.enemyAI.getValue());
+  console.log(game);
+
+  const aiPlayer = lobby.addAiToGame(game, inputElements.enemyAI.getValue())
+
+  gameProxyPlayer0 = new GameProxy(game, mainPlayer);
   gameProxyPlayer0.bindAI();
-  gameProxyPlayer1 = new GameProxy(game, lobby.players[1]);
-  gameProxyPlayer1.bindAI();
+
+  gameProxyAi = new GameProxy(game, aiPlayer);
+  gameProxyAi.bindAI();
 
   await closeWinScreen();
 }

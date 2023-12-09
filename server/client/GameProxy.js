@@ -107,7 +107,6 @@ export class GameProxy {
 
   // endpoint for gameState to be pushed from server
   consumeGameState(newGameState) {
-    console.log(newGameState);
     //  would be better to not redraw everything but check for diffs
     // but for now just redrawing everything
     this.gameState = newGameState;
@@ -122,13 +121,15 @@ export class GameProxy {
     } else if (this.gridSystem) {
       this.gridSystem.shipSidebar.updateAssetsPlacedStates();
     }
+
+    if (this.lobbyPlayer.isAi === true) this.ai.performMove();
   }
 
   async placeShip(ship, x, y, rotationDeg) {
     try {
       const response = await this.gameAPI.placeShip(this.playerId, ship, x, y, rotationDeg);
       this.userMessage.message(response);
-      this.gridSystem.shipSidebar.clearSelected();
+      if (this.gridSystem) this.gridSystem.shipSidebar.clearSelected();
     } catch (e) {
       console.error(e);
       this.userMessage.error(e);
@@ -136,7 +137,7 @@ export class GameProxy {
 
     //   pretend we got a response from the server, and technically
     //   anything could have occurred
-    await this.syncGameState();
+    // await this.syncGameState();
   }
 
   async shipsReady() {
@@ -147,7 +148,7 @@ export class GameProxy {
       this.userMessage.error(e);
     }
 
-    await this.syncGameState();
+    // await this.syncGameState();
   }
 
   async attackLocation(x, y) {
@@ -158,6 +159,6 @@ export class GameProxy {
       this.userMessage.error(e);
     }
 
-    await this.syncGameState();
+    // await this.syncGameState();
   }
 }

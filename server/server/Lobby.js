@@ -15,6 +15,14 @@ class LobbyPlayer {
   }
 }
 
+class AiPlayer {
+  constructor(aiType) {
+    this.id = lobby_player_id++;
+    this.aiType = aiType;
+    this.isAi = true;
+  }
+}
+
 class Lobby {
   constructor() {
     this.games = [];
@@ -57,6 +65,13 @@ class Lobby {
     const newPlayer = new LobbyPlayer(name);
     this.players.push(newPlayer);
     return newPlayer;
+  }
+
+  addAiToGame(game, aiType) {
+    const newAi = new AiPlayer(aiType);
+    this.players.push(newAi);
+    game.addPlayer(newAi);
+    return newAi;
   }
 }
 

@@ -10,7 +10,7 @@ export function planPlaceShips(gameConfig, player) {
     // if the player hasn't placed ship, it needs to be placed
     return player.playerShips.findIndex(ps => ps.ship.id === remShip.id) === -1;
   });
-  console.log(remainingShipsToPlace);
+
   if (remainingShipsToPlace.length === 0) return null;
 
   const playerBoard = [];
@@ -29,7 +29,6 @@ export function planPlaceShips(gameConfig, player) {
     }
   }
 
-  console.log(playerBoard);
   remainingShipsToPlace.sort((a, b) => b.size - a.size);
   const plannedMove = findPossibleLocationsForShip(playerBoard, remainingShipsToPlace[0]);
   // need to reconvert the region offsets back for player
@@ -43,7 +42,6 @@ export function planPlaceShips(gameConfig, player) {
 // find all possible locations for the ship, used for small boards where everything
 // is compact.  Big boards probably should use different approach
 function findPossibleLocationsForShip(playerBoard, ship) {
-  console.log('finding locations for ship ', ship);
   const possibleRangesX = [];
   const possibleRangesY = [];
   // try to fit the ship on x-axis
@@ -91,7 +89,6 @@ function findPossibleLocationsForShip(playerBoard, ship) {
     }
   }
 
-  console.log(possibleRangesX, possibleRangesY);
   //  randomly pick a range, then location
   if (possibleRangesY.length === 0) {
     if (possibleRangesX.length === 0) {

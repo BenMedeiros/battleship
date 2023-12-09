@@ -11,7 +11,7 @@ export const PlayerStatus = {
   ships_placed: 1,
   // player confirmed ships are placed and locked in
   ships_ready: 2,
-  // waiting on player to choose attach location
+  // waiting on player to choose attack location
   planning_attack: 3,
   // player attack submitted (no step for submit)
   reloading: 4,
