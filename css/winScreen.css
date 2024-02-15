@@ -34,10 +34,16 @@
   margin: 1rem;
 }
 
-#game-config-screen > button:hover {
+#game-config-screen > button:hover:not(:disabled) {
   background-color: var(--color-backdrop-hover);
   border: 1px solid black;
 }
+
+#game-config-screen > button:disabled {
+  background-color: var(--color-btn-disabled);
+  cursor: default;
+}
+
 
 #game-config-screen label {
   text-align: right;

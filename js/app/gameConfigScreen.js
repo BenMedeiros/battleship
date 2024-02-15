@@ -11,6 +11,11 @@ import {SelectInputType} from "../../html/tinyComponents/SelectInputType.js";
 import {LabelInputType} from "../../html/tinyComponents/LabelInputType.js";
 import {getGlobalLobby} from "../../server/server/Lobby.js";
 import {GameProxy} from "../../server/client/GameProxy.js";
+import {
+  getOfferUrlAsync,
+  getPendingAnswerResponse, isPendingAnswerGenerating, onDataChannelOpen,
+  processConnectionText, sendMsg
+} from "../webRTC/networkHelper.js";
 
 let winScreenElement = null;
 
@@ -24,6 +29,7 @@ const savedConfig = {
 };
 
 const inputElements = {};
+const buttonElements = {};
 
 // create screen to show if player won or lost
 function createWinScreen() {
@@ -48,10 +54,10 @@ function createWinScreen() {
     savedConfig.name, 'your name', isGameStarted, winScreenElement);
 
   inputElements.height = new LabelInputType('height', 'integer', 'Height',
-    savedConfig.height, 'your name', isGameStarted, winScreenElement);
+    savedConfig.height, '5', isGameStarted, winScreenElement);
 
   inputElements.width = new LabelInputType('width', 'integer', 'Width',
-    savedConfig.width, 'your name', isGameStarted, winScreenElement);
+    savedConfig.width, '5', isGameStarted, winScreenElement);
 
   inputElements.enemyAI = new SelectInputType('enemyAI', 'Enemy AI',
     null, {basic: 'basic', strong: 'strong'},
@@ -59,6 +65,22 @@ function createWinScreen() {
   inputElements.enemyAI.createElementIn(winScreenElement);
 
   const submit = new ButtonType('new-game', 'New Game', newGame, null, null, winScreenElement);
+
+  buttonElements.hostGameBtn = new ButtonType('host-game', 'Host Game - Share',
+    hostGame, isPendingAnswerGenerating(), null, winScreenElement);
+
+  buttonElements.joinGameBtn = new ButtonType('join-game', 'Join Game - Copy Response',
+    joinGame, !isPendingAnswerGenerating(), null, winScreenElement);
+
+  inputElements.gameConnection = new LabelInputType('gameConnection', 'string', 'gameConnection',
+    null, 'paste connection details/url here', isGameStarted, winScreenElement);
+  inputElements.gameConnection.onModified(joinGameText);
+
+  onDataChannelOpen(() => {
+    console.log('comms established for game');
+    sendMsg('hello from device');
+  });
+
 
   document.getElementById("main").appendChild(winScreenElement);
 
@@ -94,7 +116,7 @@ async function newGame() {
   const mainPlayer = lobby.players[0];
 
   const game = lobby.createGame(mainPlayer.id, inputElements.height.getValue(),
-      inputElements.width.getValue(), inputElements.enemyAI.getValue());
+    inputElements.width.getValue(), inputElements.enemyAI.getValue());
   console.log(game);
 
   const aiPlayer = lobby.addAiToGame(game, inputElements.enemyAI.getValue())
@@ -106,6 +128,42 @@ async function newGame() {
   gameProxyAi.bindAI();
 
   await closeWinScreen();
+}
+
+
+async function hostGame() {
+  console.log('host game clicked');
+  getOfferUrlAsync(shareOffer).then();
+}
+
+async function shareOffer(pendingOffer) {
+  try {
+    await navigator.share({
+      title: "BattleShip Invite",
+      text: "Battleship Host Offer",
+      url: pendingOffer.url.toString(),
+    });
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+async function joinGame() {
+  try {
+    // await navigator.share({
+    //   title: "BattleShip Invite",s
+    //   text: getPendingAnswerResponse(),
+    // });
+
+    await navigator.clipboard.writeText(getPendingAnswerResponse());
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+async function joinGameText() {
+  const connectionDetails = inputElements.gameConnection.getValue();
+  await processConnectionText(connectionDetails);
 }
 
 

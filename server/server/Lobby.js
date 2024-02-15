@@ -4,6 +4,8 @@ import {Game} from "./Game.js";
 
 /*
 * Lobby for players to list/join games
+* The lobby will be hosted by a individual client.  List of lobbies should be
+* searching in AWS server
 * */
 
 let lobby_player_id = 0;
@@ -58,6 +60,8 @@ class Lobby {
   joinGame(playerId, gameId) {
     const game = this.getGame(gameId);
     game.addPlayer(this.getPlayer(playerId));
+
+
     return game;
   }
 
@@ -81,3 +85,4 @@ let globalLobby = new Lobby();
 export function getGlobalLobby() {
   return globalLobby;
 }
+
