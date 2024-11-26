@@ -65,7 +65,3 @@ export function loadServerImage(src, cb) {
   }
 }
 
-function loadServerImageWithPrefix(src, cb) {
-
-}
-

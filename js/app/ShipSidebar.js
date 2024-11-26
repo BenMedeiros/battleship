@@ -96,6 +96,10 @@ export class ShipSidebar {
       const image = document.createElement('img');
       image.src = ship.asset.src;
       image.alt = ship.asset.fileName;
+      image.onerror = () => {
+        image.onerror = null; //prevent loops
+        image.src = '/battleship' + ship.asset.src; //gitPages auto prefix this now
+      }
       divWrapper.appendChild(image);
 
       this.sidebarEl.appendChild(divWrapper);
