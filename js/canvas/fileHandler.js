@@ -52,9 +52,12 @@ export function loadServerImage(src, cb) {
   };
 
   img.onerror = () => {
+    img.onerror = null;
     // load the server image with /battleship because GitHub Pages prefix this sometimes
     if (img.src.startsWith('/battleship')) {
       console.error('couldnt load resource even with /battleship prefix');
+      return;
+       
     } else {
       img.src = '/battleship' + src;
       img.onload = () => {
