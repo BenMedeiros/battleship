@@ -50,5 +50,22 @@ export function loadServerImage(src, cb) {
     serverImageCache[src] = img;
     if (cb) cb(img);
   };
+
+  img.onerror = () => {
+    // load the server image with /battleship because GitHub Pages prefix this sometimes
+    if (img.src.startsWith('/battleship')) {
+      console.error('couldnt load resource even with /battleship prefix');
+    } else {
+      img.src = '/battleship' + src;
+      img.onload = () => {
+        serverImageCache[src] = img;
+        if (cb) cb(img);
+      };
+    } 
+  }
+}
+
+function loadServerImageWithPrefix(src, cb) {
+
 }
 
